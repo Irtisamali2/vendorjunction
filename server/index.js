@@ -15,7 +15,9 @@ const PORT = process.env.PORT || 5000;
 // ── Security Middleware ──────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({
-  origin: [process.env.FRONTEND_URL || 'http://localhost:5173', 'http://localhost:3000'],
+  origin: process.env.NODE_ENV === 'production'
+    ? process.env.FRONTEND_URL
+    : [process.env.FRONTEND_URL || 'http://localhost:5173', 'http://localhost:3000'],
   credentials: true
 }));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 200, standardHeaders: true, legacyHeaders: false }));
