@@ -1,64 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, Shield, Globe, Award, Users, BookOpen, CheckCircle, ChevronRight } from 'lucide-react'
-
-/* ── animated count-up ── */
-function useCountUp(target, duration = 2000, active = false) {
-  const [val, setVal] = useState(0)
-  useEffect(() => {
-    if (!active) return
-    let start = null
-    const tick = (ts) => {
-      if (!start) start = ts
-      const p = Math.min((ts - start) / duration, 1)
-      setVal(Math.floor(p * target))
-      if (p < 1) requestAnimationFrame(tick)
-    }
-    requestAnimationFrame(tick)
-  }, [target, duration, active])
-  return val
-}
-
-/* ── floating orb ── */
-function Orb({ style }) {
-  return <div style={{ position: 'absolute', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none', ...style }} />
-}
-
-/* ── stat card ── */
-function StatCard({ value, suffix, label, color, active }) {
-  const count = useCountUp(value, 2000, active)
-  return (
-    <div style={{
-      flex: 1, minWidth: '140px',
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      gap: '6px', padding: '28px 20px',
-      borderRight: '1px solid rgba(255,255,255,0.05)',
-    }}>
-      <span style={{
-        fontSize: '42px', fontWeight: '800', lineHeight: 1,
-        background: `linear-gradient(135deg, ${color}, white)`,
-        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-      }}>
-        {count}{suffix}
-      </span>
-      <span style={{ fontSize: '13px', color: '#64748B', fontWeight: '500', textAlign: 'center' }}>{label}</span>
-    </div>
-  )
-}
+import { ArrowRight, Globe, Shield, Award, Briefcase, GraduationCap, CheckCircle, ChevronRight } from 'lucide-react'
 
 /* ── feature pill ── */
 function FeaturePill({ icon: Icon, text }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: '8px',
-      padding: '8px 16px',
-      background: 'rgba(99,102,241,0.08)',
-      border: '1px solid rgba(99,102,241,0.2)',
+      padding: '8px 18px',
+      background: 'rgba(13,148,136,0.07)',
+      border: '1px solid rgba(13,148,136,0.18)',
       borderRadius: '100px',
-      fontSize: '13px', color: '#A5B4FC', fontWeight: '500',
+      fontSize: '13px', color: '#0F766E', fontWeight: '600',
+      fontFamily: "'Segoe UI', 'Source Sans 3', sans-serif",
     }}>
-      <Icon size={13} />
+      <Icon size={13} color="#0D9488" />
       {text}
     </div>
   )
@@ -70,7 +27,7 @@ export default function Landing() {
   const statsRef = useRef(null)
   const [statsVisible, setStatsVisible] = useState(false)
   const { scrollY } = useScroll()
-  const heroY = useTransform(scrollY, [0, 400], [0, 80])
+  const heroY = useTransform(scrollY, [0, 400], [0, 60])
 
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setStatsVisible(true) }, { threshold: 0.2 })
@@ -78,46 +35,68 @@ export default function Landing() {
     return () => obs.disconnect()
   }, [])
 
-  const logos = [
-    { src: '/logos/kamk.png', alt: 'KAMK University Finland' },
-    { src: '/logos/microsoft.png', alt: 'Microsoft' },
-    { src: '/logos/edukamu.png', alt: 'Edukamu' },
-    { src: '/logos/vendorjunction.png', alt: 'VendorJunction' },
-  ]
-
+  /* ─ Item #8 — 5 feature pills ─ */
   const features = [
     { icon: Shield, text: 'Microsoft Certified' },
-    { icon: Globe, text: 'Global Network' },
-    { icon: Award, text: 'Accredited Program' },
-    { icon: BookOpen, text: 'Microdegree Certified' },
+    { icon: Award, text: 'EU ECTS Credits' },
+    { icon: Globe, text: 'Accredited Program' },
+    { icon: Briefcase, text: "Pathway to Int'l and Local Jobs" },
+    { icon: GraduationCap, text: 'Higher Education in EU Universities' },
   ]
 
+  /* ─ Item #12 — Programs with Unsplash images ─ */
   const programs = [
-    { name: 'AI Developer', icon: '🤖', desc: 'Build intelligent systems with Azure AI' },
-    { name: 'Data Analyst', icon: '📊', desc: 'Transform data into business insights' },
-    { name: 'Cybersecurity', icon: '🔐', desc: 'Protect digital infrastructure' },
-    { name: 'Cloud Engineering', icon: '☁️', desc: 'Architect scalable cloud solutions' },
-    { name: 'Power Platform', icon: '⚡', desc: 'Automate business workflows' },
-    { name: 'Data Engineering', icon: '🔧', desc: 'Design robust data pipelines' },
+    {
+      name: 'Cloud & Cybersecurity',
+      desc: 'Architect the cloud. Secure the future.',
+      img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=700&q=80',
+      badge: 'Cloud & Security', badgeColor: '#3B82F6',
+    },
+    {
+      name: 'AI Developer',
+      desc: 'Engineer intelligence into every solution.',
+      img: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=700&q=80',
+      badge: 'Artificial Intelligence', badgeColor: '#0D9488',
+    },
+    {
+      name: 'Data Engineer',
+      desc: "Build the pipelines that power the world's data.",
+      img: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&w=700&q=80',
+      badge: 'Data Infrastructure', badgeColor: '#F59E0B',
+    },
+    {
+      name: 'Data Analyst',
+      desc: 'Turn data into decisions that matter.',
+      img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=700&q=80',
+      badge: 'Analytics & BI', badgeColor: '#10B981',
+    },
+    {
+      name: 'Power Platform BI',
+      desc: 'Automate workflows. Accelerate business.',
+      img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=700&q=80',
+      badge: 'Business Intelligence', badgeColor: '#F59E0B',
+    },
+    {
+      name: 'AI Agent',
+      desc: 'Build and deploy autonomous AI agents that reason, plan, and act to solve complex business problems.',
+      img: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=700&q=80',
+      badge: 'Autonomous AI', badgeColor: '#EF4444',
+    },
+  ]
+
+  /* ─ Item #13 — 10 partnership benefits ─ */
+  const benefits = [
+    'Robust Partnership', 'Margin-Driven', 'Microsoft Partnership',
+    'Global Credentials', 'Systems & Processes',
+    'Joint Planning', 'Go To Market', 'Business Development',
+    'Marketing Support', 'Enablement & Trainings',
   ]
 
   return (
-    <div style={{ background: '#0A0E1A', minHeight: '100vh', fontFamily: 'Inter, sans-serif', overflowX: 'hidden' }}>
-
-      {/* ── Background Orbs ── */}
-      <Orb style={{ width: '600px', height: '600px', top: '-200px', left: '-200px', background: 'rgba(99,102,241,0.15)' }} />
-      <Orb style={{ width: '500px', height: '500px', top: '20%', right: '-150px', background: 'rgba(245,158,11,0.08)' }} />
-      <Orb style={{ width: '400px', height: '400px', bottom: '10%', left: '20%', background: 'rgba(139,92,246,0.1)' }} />
-
-      {/* ── Grid overlay ── */}
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none',
-        backgroundImage: 'linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)',
-        backgroundSize: '72px 72px',
-      }} />
+    <div style={{ background: '#FFFFFF', minHeight: '100vh', fontFamily: 'Inter, sans-serif', overflowX: 'hidden' }}>
 
       {/* ════════════════════════════════════════
-          NAV
+          NAV  (Items #2, #3) — Light Theme
       ════════════════════════════════════════ */}
       <motion.nav
         initial={{ opacity: 0, y: -20 }}
@@ -125,56 +104,80 @@ export default function Landing() {
         transition={{ duration: 0.5 }}
         style={{
           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 48px', height: '68px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 40px', height: '76px',
+          background: 'rgba(255,255,255,0.97)',
           backdropFilter: 'blur(20px)',
-          background: 'rgba(10,14,26,0.8)',
-          borderBottom: '1px solid rgba(255,255,255,0.05)',
+          borderBottom: '1px solid #E2E8F0',
+          boxShadow: '0 1px 12px rgba(0,0,0,0.06)',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img src="/logos/vendorjunction.png" alt="VendorJunction" style={{ height: '32px', width: 'auto', filter: 'brightness(0) invert(1)' }} />
-          <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.15)' }} />
-          <span style={{ fontSize: '13px', color: '#64748B', fontWeight: '500', letterSpacing: '0.05em' }}>PARTNER PORTAL</span>
+        {/* Left: VJ Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+          <img
+            src="/logos/vendorjunction.png"
+            alt="VendorJunction"
+            style={{ height: '48px', width: 'auto' }}
+          />
+          <div style={{ width: '1px', height: '28px', background: '#E2E8F0' }} />
+          <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '700', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Segoe UI', 'Source Sans 3', sans-serif" }}>
+            PARTNER PORTAL
+          </span>
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+
+        {/* Centre: 3 Partner Logos — absolutely centered */}
+        <div style={{
+          position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', alignItems: 'center', gap: '32px',
+        }}>
+          <img src="/logos/microsoft.png" alt="Microsoft" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
+          <div style={{ width: '1px', height: '32px', background: '#E2E8F0' }} />
+          <img src="/logos/kamk.png" alt="KAMK University Finland" style={{ height: '52px', width: 'auto', objectFit: 'contain', maxWidth: '160px' }} />
+          <div style={{ width: '1px', height: '32px', background: '#E2E8F0' }} />
+          <img src="/logos/edukamu.png" alt="Edukamu" style={{ height: '44px', width: 'auto', objectFit: 'contain', maxWidth: '160px' }} />
+        </div>
+
+        {/* Right: Nav Buttons */}
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0 }}>
           <button
             onClick={() => navigate('/admin/login')}
             style={{
               background: 'transparent', border: 'none', color: '#64748B',
               fontSize: '13px', fontWeight: '500', padding: '8px 16px',
-              borderRadius: '8px', cursor: 'pointer', transition: 'color 0.15s',
+              borderRadius: '8px', cursor: 'pointer', transition: 'all 0.15s',
               fontFamily: 'Inter, sans-serif',
             }}
-            onMouseEnter={e => e.currentTarget.style.color = '#F8FAFC'}
-            onMouseLeave={e => e.currentTarget.style.color = '#64748B'}
+            onMouseEnter={e => { e.currentTarget.style.color = '#0F172A'; e.currentTarget.style.background = '#F1F5F9' }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#64748B'; e.currentTarget.style.background = 'transparent' }}
           >
             Admin
           </button>
           <button
             onClick={() => navigate('/partner/login')}
             style={{
-              background: 'transparent', border: '1px solid rgba(255,255,255,0.1)',
-              color: '#94A3B8', fontSize: '13px', fontWeight: '500',
+              background: 'transparent', border: '1px solid #E2E8F0',
+              color: '#475569', fontSize: '13px', fontWeight: '500',
               padding: '8px 20px', borderRadius: '8px', cursor: 'pointer',
-              transition: 'all 0.15s', fontFamily: 'Inter, sans-serif',
+              transition: 'all 0.15s', fontFamily: "'Segoe UI', 'Source Sans 3', sans-serif",
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)'; e.currentTarget.style.color = '#F8FAFC' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#94A3B8' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#0D9488'; e.currentTarget.style.color = '#0D9488' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.color = '#475569' }}
           >
             Partner Login
           </button>
           <button
             onClick={() => navigate('/register')}
             style={{
-              background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+              background: 'linear-gradient(135deg, #0D9488, #0D9488)',
               border: 'none', color: 'white', fontSize: '13px', fontWeight: '600',
-              padding: '9px 22px', borderRadius: '8px', cursor: 'pointer',
-              boxShadow: '0 0 20px rgba(99,102,241,0.3)', transition: 'all 0.2s',
-              fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '10px 22px', borderRadius: '8px', cursor: 'pointer',
+              boxShadow: '0 2px 12px rgba(13,148,136,0.3)', transition: 'all 0.2s',
+              fontFamily: "'Segoe UI', 'Source Sans 3', sans-serif", display: 'flex', alignItems: 'center', gap: '6px',
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(99,102,241,0.5)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 0 20px rgba(99,102,241,0.3)' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(13,148,136,0.4)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 12px rgba(13,148,136,0.3)' }}
           >
             Become a Partner <ArrowRight size={13} />
           </button>
@@ -182,73 +185,90 @@ export default function Landing() {
       </motion.nav>
 
       {/* ════════════════════════════════════════
-          HERO
+          HERO  (Items #4–#9) — Light Theme
       ════════════════════════════════════════ */}
       <motion.section
         ref={heroRef}
-        style={{ position: 'relative', zIndex: 1, paddingTop: '140px', paddingBottom: '80px', y: heroY }}
+        style={{
+          position: 'relative', zIndex: 1, paddingTop: '148px', paddingBottom: '80px', y: heroY,
+          background: 'linear-gradient(180deg, #F8FAFF 0%, #FFFFFF 100%)',
+        }}
       >
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
+        {/* Subtle decorative blobs */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', zIndex: 0, pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', width: '500px', height: '500px', top: '-100px', left: '-150px', borderRadius: '50%', background: 'rgba(13,148,136,0.06)', filter: 'blur(80px)' }} />
+          <div style={{ position: 'absolute', width: '400px', height: '400px', top: '10%', right: '-100px', borderRadius: '50%', background: 'rgba(245,158,11,0.05)', filter: 'blur(80px)' }} />
+        </div>
 
-          {/* Badge */}
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+
+          {/* Item #4 — Badge with globe icon */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '32px',
-              padding: '6px 16px 6px 10px',
-              background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)',
-              borderRadius: '100px',
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '10px', marginBottom: '28px',
+              padding: '8px 20px 8px 14px',
+              background: 'rgba(13,148,136,0.07)', border: '1px solid rgba(13,148,136,0.2)',
+              borderRadius: '100px', cursor: 'pointer',
             }}
+            onClick={() => navigate('/register')}
           >
-            <span style={{
-              background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: 'white',
-              fontSize: '10px', fontWeight: '700', padding: '2px 8px', borderRadius: '100px',
-              letterSpacing: '0.08em',
-            }}>NEW</span>
-            <span style={{ fontSize: '13px', color: '#A5B4FC', fontWeight: '500' }}>
-              2026 Partner Program Now Open — Apply Today
+            <div style={{
+              width: '26px', height: '26px', borderRadius: '50%',
+              background: 'linear-gradient(135deg, #0D9488, #0D9488)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Globe size={13} color="white" />
+            </div>
+            <span style={{ fontSize: '13px', color: '#0F766E', fontWeight: '500' }}>
+              Global Partner Program Now Open – Apply Today
             </span>
-            <ChevronRight size={13} color="#6366F1" />
+            <ChevronRight size={14} color="#0D9488" />
           </motion.div>
 
-          {/* Headline */}
+          {/* Item #5 — "Microdegree Program" brand label */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.08 }}
+            style={{ marginBottom: '10px' }}
+          >
+            <span style={{ fontSize: '15px', fontWeight: '600', letterSpacing: '0.03em', color: '#0EA5E9', fontFamily: 'Inter, sans-serif' }}>
+              Microdegree Program
+            </span>
+          </motion.div>
+
+          {/* H1 — Item #5 */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-            style={{
-              fontSize: 'clamp(44px, 7vw, 80px)', fontWeight: '900', lineHeight: 1.05,
-              letterSpacing: '-0.04em', marginBottom: '24px',
-            }}
+            style={{ fontSize: 'clamp(44px, 7vw, 80px)', fontWeight: '900', lineHeight: 1.05, letterSpacing: '-0.04em', marginBottom: '20px' }}
           >
-            <span style={{ color: '#F8FAFC' }}>Microsoft Skills</span>
+            <span style={{ color: '#0F172A' }}>Microsoft Skills</span>
             <br />
             <span style={{
-              background: 'linear-gradient(135deg, #6366F1 0%, #A78BFA 50%, #F59E0B 100%)',
+              background: 'linear-gradient(135deg, #0D9488 0%, #A78BFA 50%, #F59E0B 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>for Jobs</span>
           </motion.h1>
 
-          {/* Subheading */}
+          {/* Item #6 — Global Partner Portal */}
           <motion.p
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-            style={{
-              fontSize: 'clamp(16px, 2.5vw, 22px)', fontWeight: '500',
-              color: '#94A3B8', marginBottom: '16px', letterSpacing: '-0.01em',
-            }}
+            style={{ fontSize: 'clamp(16px, 2.5vw, 22px)', fontWeight: '600', color: '#1E293B', marginBottom: '16px', letterSpacing: '-0.01em' }}
           >
-            Microdegree Program <span style={{ color: '#F8FAFC' }}>Partner Portal</span>
+            Global Partner Portal
           </motion.p>
 
+          {/* Item #7 — New description */}
           <motion.p
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
-            style={{
-              fontSize: '16px', color: '#64748B', lineHeight: 1.8,
-              maxWidth: '560px', margin: '0 auto 40px',
-            }}
+            style={{ fontSize: '16px', color: '#64748B', lineHeight: 1.9, maxWidth: '640px', margin: '0 auto 40px' }}
           >
-            Join the global network of accredited training partners delivering Microsoft-certified
-            microdegrees in AI, Cloud, Data, and Cybersecurity.
+            Join the global network of accredited partners delivering Microsoft-certified professional
+            Microdegree certifications with EU ECTS credits in{' '}
+            <span style={{ color: '#475569', fontWeight: '500' }}>AI, Cloud and Cybersecurity, Data Engineering,
+              Data Analytics, Power Platform BI and AI Agent.</span>
           </motion.p>
 
-          {/* Feature pills */}
+          {/* Item #8 — 5 Feature pills */}
           <motion.div
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
             style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '48px' }}
@@ -259,147 +279,151 @@ export default function Landing() {
           {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.35 }}
-            style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '64px' }}
+            style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '72px' }}
           >
             <button
               onClick={() => navigate('/register')}
               style={{
-                background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                background: 'linear-gradient(135deg, #0D9488, #0D9488)',
                 border: 'none', color: 'white', fontSize: '15px', fontWeight: '600',
-                padding: '16px 36px', borderRadius: '12px', cursor: 'pointer',
-                boxShadow: '0 0 40px rgba(99,102,241,0.35)', transition: 'all 0.25s',
-                fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: '8px',
-                letterSpacing: '-0.01em',
+                padding: '16px 38px', borderRadius: '12px', cursor: 'pointer',
+                boxShadow: '0 4px 20px rgba(13,148,136,0.35)', transition: 'all 0.25s',
+                fontFamily: "'Segoe UI', 'Source Sans 3', sans-serif", display: 'flex', alignItems: 'center', gap: '8px',
               }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 40px rgba(99,102,241,0.5)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 0 40px rgba(99,102,241,0.35)' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(13,148,136,0.45)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(13,148,136,0.35)' }}
             >
               Become a Partner <ArrowRight size={16} />
             </button>
             <button
               onClick={() => navigate('/partner/login')}
               style={{
-                background: 'rgba(248,250,252,0.04)', border: '1px solid rgba(255,255,255,0.12)',
-                color: '#F8FAFC', fontSize: '15px', fontWeight: '600',
-                padding: '16px 36px', borderRadius: '12px', cursor: 'pointer',
-                backdropFilter: 'blur(10px)', transition: 'all 0.25s',
-                fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: '8px',
+                background: '#FFFFFF', border: '1.5px solid #E2E8F0',
+                color: '#1E293B', fontSize: '15px', fontWeight: '600',
+                padding: '16px 38px', borderRadius: '12px', cursor: 'pointer',
+                transition: 'all 0.25s', fontFamily: 'Inter, sans-serif',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248,250,252,0.08)'; e.currentTarget.style.borderColor = 'rgba(99,102,241,0.4)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(248,250,252,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#0D9488'; e.currentTarget.style.color = '#0D9488' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.color = '#1E293B' }}
             >
               Partner Login
             </button>
           </motion.div>
 
-          {/* ── Partner Logos ── */}
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <p style={{ fontSize: '11px', color: '#374151', fontWeight: '600', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '20px' }}>
+          {/* Item #9 — Logos in ORIGINAL COLOR (no filter on white bg), VJ removed */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.5 }}>
+            <p style={{
+              fontSize: '10px', color: '#CBD5E1', fontWeight: '700',
+              letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '28px',
+            }}>
               In Collaboration With
             </p>
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              gap: '40px', flexWrap: 'wrap',
+              gap: '72px', flexWrap: 'wrap', paddingBottom: '72px',
             }}>
-              {logos.map((logo, i) => (
-                <motion.img
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + i * 0.1, duration: 0.4 }}
-                  src={logo.src}
-                  alt={logo.alt}
-                  style={{
-                    height: '36px', width: 'auto', objectFit: 'contain',
-                    filter: 'brightness(0) invert(1)',
-                    opacity: 0.55,
-                    transition: 'opacity 0.2s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '0.55'}
-                />
-              ))}
+              {/* Microsoft logo */}
+              <motion.img initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.55, duration: 0.4 }}
+                src="/logos/microsoft.png" alt="Microsoft"
+                style={{ height: '56px', width: 'auto', objectFit: 'contain', opacity: 1, transition: 'opacity 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.75'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              />
+              {/* KAMK — taller to match visible size of microsoft */}
+              <motion.img initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65, duration: 0.4 }}
+                src="/logos/kamk.png" alt="KAMK University Finland"
+                style={{ height: '160px', width: 'auto', objectFit: 'contain', maxWidth: '280px', opacity: 0.9, transition: 'opacity 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '0.9'}
+              />
+              {/* Edukamu — same treatment */}
+              <motion.img initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.75, duration: 0.4 }}
+                src="/logos/edukamu.png" alt="Edukamu"
+                style={{ height: '140px', width: 'auto', objectFit: 'contain', maxWidth: '280px', opacity: 0.9, transition: 'opacity 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '0.9'}
+              />
             </div>
           </motion.div>
         </div>
       </motion.section>
 
       {/* ════════════════════════════════════════
-          STATS BAR
+          STATS BAR  (Item #10)
       ════════════════════════════════════════ */}
-      <section ref={statsRef} style={{ position: 'relative', zIndex: 1, padding: '0 24px 80px' }}>
+      <section ref={statsRef} style={{ position: 'relative', zIndex: 1, padding: '0 24px 96px', background: '#FFFFFF' }}>
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           style={{
-            maxWidth: '800px', margin: '0 auto',
-            background: 'linear-gradient(135deg, rgba(30,41,59,0.6), rgba(17,24,39,0.6))',
-            border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: '20px', backdropFilter: 'blur(20px)',
+            maxWidth: '900px', margin: '0 auto',
+            background: 'linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%)',
+            border: '1px solid #E2E8F0',
+            borderRadius: '20px',
             display: 'flex', flexWrap: 'wrap', overflow: 'hidden',
-            boxShadow: '0 8px 48px rgba(0,0,0,0.4)',
+            boxShadow: '0 4px 32px rgba(13,148,136,0.08)',
           }}
         >
           {[
-            { value: 40, suffix: '+', label: 'Partner Organizations', color: '#6366F1' },
-            { value: 12, suffix: '', label: 'Countries Reached', color: '#F59E0B' },
+            { value: 46, suffix: '+', label: 'Partner Organisations', color: '#0D9488' },
+            { value: 39, suffix: '', label: 'Countries Reached', color: '#F59E0B' },
             { value: 6, suffix: '', label: 'Microdegree Programs', color: '#10B981' },
-            { value: 5000, suffix: '+', label: 'Learners Enrolled', color: '#A78BFA' },
+            { value: 70000, suffix: '+', label: 'Learners', color: '#0D9488' },
           ].map((s, i, arr) => (
             <div key={i} style={{
-              flex: 1, minWidth: '140px', padding: '32px 24px',
+              flex: 1, minWidth: '160px', padding: '36px 24px',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
-              borderRight: i < arr.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+              borderRight: i < arr.length - 1 ? '1px solid #E2E8F0' : 'none',
             }}>
               <span style={{
-                fontSize: '40px', fontWeight: '800', lineHeight: 1,
-                background: `linear-gradient(135deg, ${s.color}, white)`,
+                fontSize: '42px', fontWeight: '800', lineHeight: 1,
+                background: `linear-gradient(135deg, ${s.color}, ${s.color}99)`,
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
               }}>
                 {statsVisible ? <StatNumber value={s.value} suffix={s.suffix} /> : `0${s.suffix}`}
               </span>
-              <span style={{ fontSize: '12px', color: '#64748B', fontWeight: '500', textAlign: 'center', letterSpacing: '0.02em' }}>{s.label}</span>
+              <span style={{ fontSize: '13px', color: '#64748B', fontWeight: '500', textAlign: 'center' }}>
+                {s.label}
+              </span>
             </div>
           ))}
         </motion.div>
       </section>
 
       {/* ════════════════════════════════════════
-          PROGRAMS GRID
+          PROGRAMS GRID  (Items #11, #12) — redesigned cards with images
       ════════════════════════════════════════ */}
-      <section style={{ position: 'relative', zIndex: 1, padding: '0 24px 100px' }}>
-        <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+      <section style={{ position: 'relative', zIndex: 1, padding: '0 24px 100px', background: '#F8FAFC' }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: 'center', marginBottom: '56px' }}
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.6 }}
+            style={{ textAlign: 'center', marginBottom: '56px', paddingTop: '80px' }}
           >
             <div style={{
-              display: 'inline-block', padding: '4px 14px',
-              background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)',
+              display: 'inline-block', padding: '5px 16px',
+              background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)',
               borderRadius: '100px', fontSize: '11px', fontWeight: '700',
-              color: '#F59E0B', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '16px',
+              color: '#D97706', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '16px',
             }}>
               Program Portfolio
             </div>
             <h2 style={{
-              fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: '800',
-              color: '#F8FAFC', letterSpacing: '-0.03em', marginBottom: '12px',
+              fontSize: 'clamp(28px, 4vw, 46px)', fontWeight: '800',
+              color: '#0F172A', letterSpacing: '-0.03em', marginBottom: '14px',
             }}>
-              Microdegree Specializations
+              Microdegree Program Specialisations
             </h2>
-            <p style={{ color: '#64748B', fontSize: '16px', maxWidth: '500px', margin: '0 auto' }}>
-              Industry-aligned programs built around Microsoft technologies
+            <p style={{ color: '#64748B', fontSize: '17px', maxWidth: '520px', margin: '0 auto' }}>
+              Industry-aligned programs built around the most in-demand technologies
             </p>
           </motion.div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+          {/* Program cards — 3x2 grid with Unsplash images */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
             {programs.map((p, i) => (
               <motion.div
                 key={i}
@@ -408,26 +432,53 @@ export default function Landing() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.07 }}
                 style={{
-                  background: 'rgba(30,41,59,0.5)',
-                  border: '1px solid rgba(255,255,255,0.07)',
-                  borderRadius: '16px', padding: '28px 24px',
-                  backdropFilter: 'blur(12px)',
-                  transition: 'all 0.25s', cursor: 'default',
-                  display: 'flex', alignItems: 'flex-start', gap: '16px',
+                  background: '#FFFFFF',
+                  border: '1px solid #E8ECF0',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+                  transition: 'all 0.25s',
+                  cursor: 'default',
                 }}
-                whileHover={{ y: -4, borderColor: 'rgba(99,102,241,0.3)', boxShadow: '0 8px 32px rgba(99,102,241,0.1)' }}
+                whileHover={{ y: -6, boxShadow: '0 12px 40px rgba(13,148,136,0.12)', borderColor: 'rgba(13,148,136,0.2)' }}
               >
-                <div style={{
-                  width: '44px', height: '44px', borderRadius: '12px',
-                  background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '22px', flexShrink: 0,
-                }}>
-                  {p.icon}
+                {/* Card Image */}
+                <div style={{ position: 'relative', height: '180px', overflow: 'hidden' }}>
+                  <img
+                    src={p.img}
+                    alt={p.name}
+                    style={{
+                      width: '100%', height: '100%', objectFit: 'cover',
+                      transition: 'transform 0.4s ease',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                    onError={e => { e.currentTarget.style.display = 'none' }}
+                  />
+                  {/* Overlay gradient at bottom of image */}
+                  <div style={{
+                    position: 'absolute', bottom: 0, left: 0, right: 0, height: '60px',
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.25))',
+                  }} />
+                  {/* Badge on image */}
+                  <span style={{
+                    position: 'absolute', top: '12px', left: '12px',
+                    background: p.badgeColor, color: 'white',
+                    fontSize: '10px', fontWeight: '700', padding: '3px 10px',
+                    borderRadius: '100px', letterSpacing: '0.06em', textTransform: 'uppercase',
+                  }}>
+                    {p.badge}
+                  </span>
                 </div>
-                <div>
-                  <div style={{ fontWeight: '700', color: '#F8FAFC', fontSize: '15px', marginBottom: '6px' }}>{p.name}</div>
-                  <div style={{ color: '#64748B', fontSize: '13px', lineHeight: 1.6 }}>{p.desc}</div>
+
+                {/* Card Content */}
+                <div style={{ padding: '20px 22px 24px' }}>
+                  <h3 style={{ fontWeight: '700', color: '#0F172A', fontSize: '16px', marginBottom: '8px' }}>
+                    {p.name}
+                  </h3>
+                  <p style={{ color: '#64748B', fontSize: '13.5px', lineHeight: 1.65 }}>
+                    {p.desc}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -436,65 +487,84 @@ export default function Landing() {
       </section>
 
       {/* ════════════════════════════════════════
-          CTA BANNER
+          PARTNERSHIP BENEFITS + CTA  (Items #13, #14)
       ════════════════════════════════════════ */}
-      <section style={{ position: 'relative', zIndex: 1, padding: '0 24px 100px' }}>
+      <section style={{ position: 'relative', zIndex: 1, padding: '0 24px 100px', background: '#FFFFFF' }}>
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
           style={{
-            maxWidth: '900px', margin: '0 auto',
-            background: 'linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(139,92,246,0.1) 50%, rgba(245,158,11,0.08) 100%)',
-            border: '1px solid rgba(99,102,241,0.25)',
-            borderRadius: '24px', padding: '64px 48px',
-            textAlign: 'center', position: 'relative', overflow: 'hidden',
-            boxShadow: '0 0 80px rgba(99,102,241,0.08)',
+            maxWidth: '980px', margin: '0 auto',
+            background: 'linear-gradient(135deg, rgba(13,148,136,0.05) 0%, rgba(139,92,246,0.04) 50%, rgba(245,158,11,0.04) 100%)',
+            border: '1.5px solid rgba(13,148,136,0.12)',
+            borderRadius: '24px', padding: '60px 48px',
+            textAlign: 'center',
+            boxShadow: '0 4px 40px rgba(13,148,136,0.06)',
           }}
         >
-          <Orb style={{ width: '300px', height: '300px', top: '-100px', right: '-80px', background: 'rgba(99,102,241,0.15)' }} />
-          <Orb style={{ width: '200px', height: '200px', bottom: '-60px', left: '-40px', background: 'rgba(245,158,11,0.1)' }} />
-
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
-              {['Flexible Partnership', 'Revenue Share', 'Marketing Support', 'Tech Enablement'].map((t, i) => (
+          {/* Item #13 — 10 benefits in 2 rows */}
+          <div style={{ marginBottom: '40px' }}>
+            <p style={{ fontSize: '11px', color: '#0D9488', fontWeight: '700', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '20px' }}>
+              Partnership Benefits
+            </p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
+              {benefits.slice(0, 5).map((t, i) => (
                 <span key={i} style={{
                   display: 'inline-flex', alignItems: 'center', gap: '6px',
-                  background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)',
-                  borderRadius: '100px', padding: '4px 12px',
-                  fontSize: '12px', color: '#34D399', fontWeight: '500',
+                  background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)',
+                  borderRadius: '100px', padding: '7px 16px',
+                  fontSize: '12.5px', color: '#059669', fontWeight: '500',
                 }}>
-                  <CheckCircle size={11} /> {t}
+                  <CheckCircle size={12} /> {t}
                 </span>
               ))}
             </div>
-            <h2 style={{
-              fontSize: 'clamp(28px, 4vw, 44px)', fontWeight: '800', color: '#F8FAFC',
-              letterSpacing: '-0.03em', marginBottom: '16px',
-            }}>
-              Ready to Join the Ecosystem?
-            </h2>
-            <p style={{ color: '#94A3B8', fontSize: '16px', maxWidth: '480px', margin: '0 auto 36px', lineHeight: 1.7 }}>
-              Applications for the 2026 Microsoft Microdegree Partner Program are open. Limited partner slots available.
-            </p>
-            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => navigate('/register')}
-                style={{
-                  background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-                  border: 'none', color: 'white', fontSize: '15px', fontWeight: '600',
-                  padding: '16px 40px', borderRadius: '12px', cursor: 'pointer',
-                  boxShadow: '0 0 32px rgba(99,102,241,0.4)', transition: 'all 0.25s',
-                  fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: '8px',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 40px rgba(99,102,241,0.55)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 0 32px rgba(99,102,241,0.4)' }}
-              >
-                Apply Now — It's Free <ArrowRight size={16} />
-              </button>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              {benefits.slice(5).map((t, i) => (
+                <span key={i} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  background: 'rgba(13,148,136,0.07)', border: '1px solid rgba(13,148,136,0.18)',
+                  borderRadius: '100px', padding: '7px 16px',
+                  fontSize: '12.5px', color: '#0F766E', fontWeight: '500',
+                }}>
+                  <CheckCircle size={12} /> {t}
+                </span>
+              ))}
             </div>
           </div>
+
+          {/* Item #14 — Updated CTA headline */}
+          <h2 style={{
+            fontSize: 'clamp(24px, 3.5vw, 40px)', fontWeight: '800', color: '#0F172A',
+            letterSpacing: '-0.03em', marginBottom: '8px', lineHeight: 1.15,
+          }}>
+            Ready to Join the Microsoft Skills for Jobs
+          </h2>
+          <h2 style={{
+            fontSize: 'clamp(24px, 3.5vw, 40px)', fontWeight: '800',
+            letterSpacing: '-0.03em', marginBottom: '28px', lineHeight: 1.15,
+            background: 'linear-gradient(135deg, #0D9488, #0D9488)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+          }}>
+            Microdegree Program Global Partners Ecosystem?
+          </h2>
+
+          <button
+            onClick={() => navigate('/register')}
+            style={{
+              background: 'linear-gradient(135deg, #0D9488, #0D9488)',
+              border: 'none', color: 'white', fontSize: '15px', fontWeight: '600',
+              padding: '16px 52px', borderRadius: '12px', cursor: 'pointer',
+              boxShadow: '0 4px 20px rgba(13,148,136,0.35)', transition: 'all 0.25s',
+              fontFamily: 'Inter, sans-serif', display: 'inline-flex', alignItems: 'center', gap: '8px',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(13,148,136,0.45)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(13,148,136,0.35)' }}
+          >
+            Apply Now <ArrowRight size={16} />
+          </button>
         </motion.div>
       </section>
 
@@ -502,21 +572,21 @@ export default function Landing() {
           FOOTER
       ════════════════════════════════════════ */}
       <footer style={{
-        position: 'relative', zIndex: 1,
-        borderTop: '1px solid rgba(255,255,255,0.05)',
+        borderTop: '1px solid #E2E8F0',
         padding: '32px 48px',
+        background: '#F8FAFC',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         flexWrap: 'wrap', gap: '16px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src="/logos/vendorjunction.png" alt="VendorJunction" style={{ height: '22px', filter: 'brightness(0) invert(1)', opacity: 0.4 }} />
-          <span style={{ color: '#374151', fontSize: '13px' }}>© 2026 Vendor Junction Group. All rights reserved.</span>
+          <img src="/logos/vendorjunction.png" alt="VendorJunction" style={{ height: '24px', opacity: 0.4 }} />
+          <span style={{ color: '#94A3B8', fontSize: '13px' }}>© 2026 Vendor Junction Group. All rights reserved.</span>
         </div>
         <div style={{ display: 'flex', gap: '24px' }}>
           {['Privacy Policy', 'Terms of Service', 'Contact Us'].map((t, i) => (
-            <span key={i} style={{ color: '#374151', fontSize: '13px', cursor: 'pointer', transition: 'color 0.15s' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#94A3B8'}
-              onMouseLeave={e => e.currentTarget.style.color = '#374151'}
+            <span key={i} style={{ color: '#94A3B8', fontSize: '13px', cursor: 'pointer', transition: 'color 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#0F172A'}
+              onMouseLeave={e => e.currentTarget.style.color = '#94A3B8'}
             >{t}</span>
           ))}
         </div>
@@ -526,7 +596,7 @@ export default function Landing() {
   )
 }
 
-/* inline stat number with countup */
+/* ── inline stat number with countup ── */
 function StatNumber({ value, suffix }) {
   const [count, setCount] = useState(0)
   useEffect(() => {
@@ -539,5 +609,5 @@ function StatNumber({ value, suffix }) {
     }
     requestAnimationFrame(tick)
   }, [value])
-  return <>{count}{suffix}</>
+  return <>{count.toLocaleString()}{suffix}</>
 }

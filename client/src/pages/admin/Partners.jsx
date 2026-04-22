@@ -191,7 +191,7 @@ export default function Partners() {
               }}
               whileHover={{
                 borderColor: 'var(--accent-primary)',
-                boxShadow: '0 0 20px rgba(99,102,241,0.15)',
+                boxShadow: '0 0 20px rgba(13,148,136,0.15)',
                 y: -2,
               }}
             >

@@ -39,9 +39,9 @@ export default function PartnerLogin() {
       padding: '24px',
       backgroundImage: `
         radial-gradient(ellipse at 70% 50%, rgba(245,158,11,0.08) 0%, transparent 60%),
-        radial-gradient(ellipse at 30% 20%, rgba(99,102,241,0.08) 0%, transparent 50%),
-        linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)
+        radial-gradient(ellipse at 30% 20%, rgba(13,148,136,0.08) 0%, transparent 50%),
+        linear-gradient(rgba(13,148,136,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13,148,136,0.03) 1px, transparent 1px)
       `,
       backgroundSize: 'auto, auto, 60px 60px, 60px 60px',
     }}>

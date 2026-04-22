@@ -55,7 +55,7 @@ function StepIndicator({ currentStep }) {
                 color: isDone || isActive ? 'white' : 'var(--text-muted)',
                 border: isDone || isActive ? 'none' : '1px solid var(--border-default)',
                 transition: 'all 0.3s ease',
-                boxShadow: isActive ? '0 0 20px rgba(99,102,241,0.4)' : 'none',
+                boxShadow: isActive ? '0 0 20px rgba(13,148,136,0.4)' : 'none',
               }}>
                 {isDone ? <CheckCircle size={18} /> : stepNum}
               </div>
@@ -242,7 +242,7 @@ export default function Register() {
         <div style={{ marginLeft: 'auto', flexShrink: 0 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
-            background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)',
+            background: 'rgba(13,148,136,0.1)', border: '1px solid rgba(13,148,136,0.2)',
             borderRadius: '100px', padding: '5px 14px',
             fontSize: '12px', color: '#A5B4FC', fontWeight: '600',
           }}>
@@ -254,7 +254,7 @@ export default function Register() {
       {/* Page body */}
       <div style={{
         padding: '48px 24px 80px',
-        backgroundImage: 'radial-gradient(ellipse at 20% 30%, rgba(99,102,241,0.07) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, rgba(245,158,11,0.04) 0%, transparent 50%)',
+        backgroundImage: 'radial-gradient(ellipse at 20% 30%, rgba(13,148,136,0.07) 0%, transparent 60%), radial-gradient(ellipse at 80% 70%, rgba(245,158,11,0.04) 0%, transparent 50%)',
       }}>
         <div style={{ maxWidth: '680px', margin: '0 auto' }}>
 
@@ -265,7 +265,7 @@ export default function Register() {
           >
             <div style={{
               display: 'inline-block', padding: '4px 14px', marginBottom: '14px',
-              background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)',
+              background: 'rgba(13,148,136,0.1)', border: '1px solid rgba(13,148,136,0.2)',
               borderRadius: '100px', fontSize: '11px', fontWeight: '700',
               color: '#A5B4FC', letterSpacing: '0.1em', textTransform: 'uppercase',
             }}>

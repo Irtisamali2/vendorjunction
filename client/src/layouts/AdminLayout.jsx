@@ -57,7 +57,7 @@ function SidebarContent({ onClose }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
             width: '36px', height: '36px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+            background: 'linear-gradient(135deg, #0D9488, #0F766E)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           }}>
@@ -104,7 +104,7 @@ function SidebarContent({ onClose }) {
                 background: active ? 'var(--accent-primary)' : 'transparent',
                 transition: 'all 0.15s ease',
                 textDecoration: 'none',
-                boxShadow: active ? '0 4px 12px rgba(99,102,241,0.3)' : 'none',
+                boxShadow: active ? '0 4px 12px rgba(13,148,136,0.3)' : 'none',
               }}
               onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = 'var(--bg-surface-2)' }}
               onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent' }}
@@ -131,7 +131,7 @@ function SidebarContent({ onClose }) {
         }}>
           <div style={{
             width: '32px', height: '32px', borderRadius: '8px',
-            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+            background: 'linear-gradient(135deg, #0D9488, #0F766E)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '13px', fontWeight: '700', color: 'white', flexShrink: 0,
           }}>
@@ -260,7 +260,7 @@ export default function AdminLayout() {
           <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{user?.email}</span>
           <div style={{
             width: '36px', height: '36px', borderRadius: '10px',
-            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+            background: 'linear-gradient(135deg, #0D9488, #0F766E)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: '14px', fontWeight: '700', color: 'white',
           }}>

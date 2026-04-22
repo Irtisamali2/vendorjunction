@@ -99,11 +99,11 @@ export default function Dashboard() {
   }, [])
 
   const STAT_CARDS = [
-    { icon: Users, label: 'Total Partners', value: stats?.total, color: '#6366F1', colorLight: 'rgba(99,102,241,0.12)' },
+    { icon: Users, label: 'Total Partners', value: stats?.total, color: '#0D9488', colorLight: 'rgba(13,148,136,0.12)' },
     { icon: Clock, label: 'Pending Review', value: stats?.pending, color: '#F59E0B', colorLight: 'rgba(245,158,11,0.12)' },
     { icon: CheckCircle, label: 'Approved', value: stats?.approved, color: '#10B981', colorLight: 'rgba(16,185,129,0.12)' },
     { icon: XCircle, label: 'Rejected', value: stats?.rejected, color: '#EF4444', colorLight: 'rgba(239,68,68,0.12)' },
-    { icon: Zap, label: 'Today', value: stats?.today, color: '#8B5CF6', colorLight: 'rgba(139,92,246,0.12)' },
+    { icon: Zap, label: 'Today', value: stats?.today, color: '#0D9488', colorLight: 'rgba(139,92,246,0.12)' },
   ]
 
   return (
@@ -149,8 +149,8 @@ export default function Dashboard() {
             <AreaChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366F1" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#0D9488" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#0D9488" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-default)" opacity={0.5} />
@@ -159,7 +159,7 @@ export default function Dashboard() {
               <Tooltip content={<CustomTooltip />} />
               <Area
                 type="monotone" dataKey="count"
-                stroke="#6366F1" strokeWidth={2}
+                stroke="#0D9488" strokeWidth={2}
                 fill="url(#colorCount)"
               />
             </AreaChart>

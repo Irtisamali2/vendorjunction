@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import toast from 'react-hot-toast'
 import api from '../utils/api'
 import { useAuth } from '../contexts/AuthContext'
@@ -38,10 +38,10 @@ export default function AdminLogin() {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '24px',
       backgroundImage: `
-        radial-gradient(ellipse at 30% 50%, rgba(99,102,241,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse at 70% 20%, rgba(139,92,246,0.08) 0%, transparent 50%),
-        linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px)
+        radial-gradient(ellipse at 30% 50%, rgba(13,148,136,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 20%, rgba(13,148,136,0.06) 0%, transparent 50%),
+        linear-gradient(rgba(13,148,136,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13,148,136,0.03) 1px, transparent 1px)
       `,
       backgroundSize: 'auto, auto, 60px 60px, 60px 60px',
     }}>
@@ -60,21 +60,17 @@ export default function AdminLogin() {
         }}
       >
         {/* Brand */}
-        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <img src="/logos/vendorjunction.png" alt="VendorJunction" style={{ height: '40px', width: 'auto', filter: 'brightness(0) invert(1)', marginBottom: '20px' }} />
-          <div style={{
-            width: '56px', height: '56px', borderRadius: '14px',
-            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 16px',
-            boxShadow: '0 0 32px rgba(99,102,241,0.35)',
-          }}>
-            <Shield size={26} color="white" />
-          </div>
-          <h1 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '36px' }}>
+          <img
+            src="/logos/vendorjunction.png"
+            alt="VendorJunction"
+            style={{ height: '56px', width: 'auto', filter: 'brightness(0) invert(1)', marginBottom: '20px' }}
+          />
+          <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '20px' }} />
+          <h1 style={{ fontSize: '22px', fontWeight: '800', color: 'white', marginBottom: '6px' }}>
             Admin Portal
           </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '12px', fontWeight: '500', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', fontWeight: '600', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
             Secure Access Only
           </p>
         </div>

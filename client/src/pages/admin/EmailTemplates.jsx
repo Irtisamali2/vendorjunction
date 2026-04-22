@@ -28,7 +28,7 @@ const TEMPLATE_META = {
   registration_welcome: {
     label: 'Registration Welcome',
     hints: ['{{first_name}}', '{{last_name}}', '{{company_name}}', '{{email}}', '{{submitted_date}}'],
-    bg: 'rgba(99,102,241,0.12)', color: '#6366F1',
+    bg: 'rgba(13,148,136,0.12)', color: '#0D9488',
   },
   status_approved: {
     label: 'Application Approved',
@@ -103,8 +103,8 @@ function EditModal({ template, onClose, onSave }) {
           <div style={{
             display: 'flex', alignItems: 'flex-start', gap: '10px',
             padding: '12px 14px', marginBottom: '20px',
-            background: 'rgba(99,102,241,0.08)',
-            borderRadius: '10px', border: '1px solid rgba(99,102,241,0.2)',
+            background: 'rgba(13,148,136,0.08)',
+            borderRadius: '10px', border: '1px solid rgba(13,148,136,0.2)',
           }}>
             <Info size={15} color="var(--accent-primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
             <div>
@@ -115,7 +115,7 @@ function EditModal({ template, onClose, onSave }) {
                 {meta.hints.map(v => (
                   <code key={v} style={{
                     fontSize: '11px', padding: '3px 8px',
-                    background: 'rgba(99,102,241,0.15)', borderRadius: '4px',
+                    background: 'rgba(13,148,136,0.15)', borderRadius: '4px',
                     color: '#A5B4FC', fontFamily: 'monospace', cursor: 'pointer',
                   }}
                     onClick={() => { navigator.clipboard?.writeText(v); toast.success(`Copied ${v}`) }}
@@ -329,12 +329,12 @@ export default function EmailTemplates() {
                     {meta.hints.slice(0, 4).map(v => (
                       <code key={v} style={{
                         fontSize: '10px', padding: '2px 6px',
-                        background: 'rgba(99,102,241,0.1)', borderRadius: '4px',
+                        background: 'rgba(13,148,136,0.1)', borderRadius: '4px',
                         color: '#A5B4FC', fontFamily: 'monospace',
                       }}>{v}</code>
                     ))}
                     {meta.hints.length > 4 && (
-                      <code style={{ fontSize: '10px', padding: '2px 6px', background: 'rgba(99,102,241,0.1)', borderRadius: '4px', color: '#64748B', fontFamily: 'monospace' }}>
+                      <code style={{ fontSize: '10px', padding: '2px 6px', background: 'rgba(13,148,136,0.1)', borderRadius: '4px', color: '#64748B', fontFamily: 'monospace' }}>
                         +{meta.hints.length - 4} more
                       </code>
                     )}
