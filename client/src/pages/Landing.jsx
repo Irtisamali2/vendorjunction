@@ -107,7 +107,7 @@ export default function Landing() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 40px', height: '76px',
+          padding: '0 40px', height: '88px',
           background: 'rgba(255,255,255,0.97)',
           backdropFilter: 'blur(20px)',
           borderBottom: '1px solid #E2E8F0',
@@ -119,7 +119,7 @@ export default function Landing() {
           <img
             src="/logos/vendorjunction.png"
             alt="VendorJunction"
-            style={{ height: '48px', width: 'auto' }}
+            style={{ height: '56px', width: 'auto' }}
           />
           <div style={{ width: '1px', height: '28px', background: '#E2E8F0' }} />
           <span style={{ fontSize: '11px', color: '#94A3B8', fontWeight: '700', letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Segoe UI', 'Source Sans 3', sans-serif" }}>
@@ -130,13 +130,20 @@ export default function Landing() {
         {/* Centre: 3 Partner Logos — absolutely centered */}
         <div style={{
           position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-          display: 'flex', alignItems: 'center', gap: '32px',
+          display: 'flex', alignItems: 'center', gap: '36px',
         }}>
-          <img src="/logos/microsoft.png" alt="Microsoft" style={{ height: '32px', width: 'auto', objectFit: 'contain' }} />
-          <div style={{ width: '1px', height: '32px', background: '#E2E8F0' }} />
-          <img src="/logos/kamk.png" alt="KAMK University Finland" style={{ height: '52px', width: 'auto', objectFit: 'contain', maxWidth: '160px' }} />
-          <div style={{ width: '1px', height: '32px', background: '#E2E8F0' }} />
-          <img src="/logos/edukamu.png" alt="Edukamu" style={{ height: '44px', width: 'auto', objectFit: 'contain', maxWidth: '160px' }} />
+          {/* Microsoft — wide image, simple height works fine */}
+          <img src="/logos/microsoft.png" alt="Microsoft" style={{ height: '44px', width: 'auto', objectFit: 'contain' }} />
+          <div style={{ width: '1px', height: '44px', background: '#E2E8F0' }} />
+          {/* KAMK — 1080×1350 portrait canvas with whitespace; use cover+clip to zoom into center */}
+          <div style={{ width: '160px', height: '72px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <img src="/logos/kamk.png" alt="KAMK University Finland" style={{ width: '160px', height: 'auto', flexShrink: 0 }} />
+          </div>
+          <div style={{ width: '1px', height: '44px', background: '#E2E8F0' }} />
+          {/* Edukamu — same portrait canvas issue */}
+          <div style={{ width: '160px', height: '72px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <img src="/logos/edukamu.png" alt="Edukamu" style={{ width: '160px', height: 'auto', flexShrink: 0 }} />
+          </div>
         </div>
 
         {/* Right: Nav Buttons */}
@@ -190,7 +197,7 @@ export default function Landing() {
       <motion.section
         ref={heroRef}
         style={{
-          position: 'relative', zIndex: 1, paddingTop: '148px', paddingBottom: '80px', y: heroY,
+          position: 'relative', zIndex: 1, paddingTop: '160px', paddingBottom: '80px', y: heroY,
           background: 'linear-gradient(180deg, #F8FAFF 0%, #FFFFFF 100%)',
         }}
       >
