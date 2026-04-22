@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
 import PhoneInputLib from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import toast from 'react-hot-toast'
 import { ArrowLeft, ArrowRight, CheckCircle, User, Building2 } from 'lucide-react'
 import api from '../utils/api'
@@ -93,8 +94,10 @@ export default function Register() {
   const [phoneCountry, setPhoneCountry] = useState(null)
   const [phoneError, setPhoneError] = useState('')
 
-  // Landline
+  // Landline with country code selector
   const [landlineValue, setLandlineValue] = useState('')
+  const [landlineCountry, setLandlineCountry] = useState(null)
+  const [landlineError, setLandlineError] = useState('')
 
   // Annual turnover — formatted display
   const [turnoverDisplay, setTurnoverDisplay] = useState('')
@@ -104,21 +107,38 @@ export default function Register() {
 
   const step1Fields = ['title', 'first_name', 'last_name', 'job_title', 'mobile', 'email']
 
-  // Validate phone number length against country format
-  const validatePhone = (value, country) => {
-    if (!value || value.length < 5) return false
-    if (country?.format) {
-      const expectedDigits = (country.format.match(/\./g) || []).length
-      // value includes dial code digits
-      if (value.length < expectedDigits) return false
+  // Validate using libphonenumber-js for accurate per-country length check
+  const validatePhone = (value, countryData) => {
+    if (!value || value.length < 4) return false
+    const dialCode = countryData?.dialCode || ''
+    const isoCode = countryData?.countryCode?.toUpperCase()
+    // Strip the dial code from the full value to get the national number
+    const nationalNumber = value.startsWith(dialCode) ? value.slice(dialCode.length) : value
+    if (!nationalNumber || nationalNumber.length < 3) return false
+    try {
+      const parsed = parsePhoneNumberFromString('+' + value, isoCode)
+      return parsed ? parsed.isValid() : false
+    } catch {
+      return false
     }
-    return true
+  }
+
+  // Validate landline (optional — only validate if number entered beyond dial code)
+  const validateLandline = (value, countryData) => {
+    if (!value || value.length <= (countryData?.dialCode?.length || 1)) return true // empty = OK (optional)
+    const isoCode = countryData?.countryCode?.toUpperCase()
+    try {
+      const parsed = parsePhoneNumberFromString('+' + value, isoCode)
+      return parsed ? parsed.isValid() : false
+    } catch {
+      return false
+    }
   }
 
   const handleNext = async () => {
     const valid = await trigger(step1Fields)
     if (!validatePhone(phoneValue, phoneCountry)) {
-      setPhoneError(`Please enter a valid${phoneCountry ? ' ' + phoneCountry.name : ''} mobile number`)
+      setPhoneError(`Please enter a valid${phoneCountry?.name ? ' ' + phoneCountry.name : ''} mobile number`)
       return
     }
     setPhoneError('')
@@ -132,6 +152,14 @@ export default function Register() {
   }
 
   const onSubmit = async (data) => {
+    // Validate landline if filled
+    if (landlineValue && landlineValue.length > (landlineCountry?.dialCode?.length || 1)) {
+      if (!validateLandline(landlineValue, landlineCountry)) {
+        setLandlineError(`Please enter a valid${landlineCountry?.name ? ' ' + landlineCountry.name : ''} landline number`)
+        return
+      }
+    }
+    setLandlineError('')
     setLoading(true)
     try {
       const payload = {
@@ -215,57 +243,97 @@ export default function Register() {
     )
   }
 
+  /* ── Shared styles ── */
+  const regHeaderStyle = `
+    .rh-header {
+      position: sticky; top: 0; z-index: 100;
+      height: 76px;
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid #E2E8F0;
+      box-shadow: 0 1px 12px rgba(0,0,0,0.06);
+      display: flex; align-items: center;
+      padding: 0 40px;
+    }
+    .rh-logos {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 28px;
+    }
+    .rh-divider { width: 1px; height: 36px; background: #E2E8F0; flex-shrink: 0; }
+    .rh-kamk-wrap { width: 130px; height: 60px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .rh-kamk-wrap img { width: 130px; height: auto; }
+    .rh-edu-wrap { width: 130px; height: 60px; overflow: hidden; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .rh-edu-wrap img { width: 130px; height: auto; }
+
+    /* ── Mobile ── */
+    @media (max-width: 640px) {
+      .rh-header { padding: 0 10px; height: 56px; }
+      .rh-back-text { display: none; }
+      .rh-step-pill { display: none; }
+      .rh-logos {
+        position: static;
+        transform: none;
+        flex: 1;
+        justify-content: center;
+        gap: 10px;
+      }
+      .rh-divider { display: none; }
+      .rh-vj-img { height: 34px !important; }
+      .rh-ms-img { height: 20px !important; }
+      .rh-kamk-wrap { width: 68px !important; height: 30px !important; }
+      .rh-kamk-wrap img { width: 68px !important; }
+      .rh-edu-wrap { width: 68px !important; height: 30px !important; }
+      .rh-edu-wrap img { width: 68px !important; }
+    }
+
+    @media (max-width: 380px) {
+      .rh-header { padding: 0 6px; }
+      .rh-kamk-wrap { width: 58px !important; height: 26px !important; }
+      .rh-kamk-wrap img { width: 58px !important; }
+      .rh-edu-wrap { width: 58px !important; height: 26px !important; }
+      .rh-edu-wrap img { width: 58px !important; }
+      .rh-ms-img { height: 17px !important; }
+      .rh-vj-img { height: 28px !important; }
+    }
+  `
+
   /* ── Main form ── */
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
+      <style>{regHeaderStyle}</style>
 
-      {/* Sticky header — white, same style as landing nav */}
-      <header style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        height: '88px',
-        background: 'rgba(255,255,255,0.97)',
-        backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid #E2E8F0',
-        boxShadow: '0 1px 12px rgba(0,0,0,0.06)',
-        display: 'flex', alignItems: 'center',
-        padding: '0 40px',
-      }}>
+      {/* Sticky header */}
+      <header className="rh-header">
         {/* Back link */}
         <Link to="/" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '7px',
+          display: 'inline-flex', alignItems: 'center', gap: '6px',
           color: '#64748B', fontSize: '13px', fontWeight: '500',
           textDecoration: 'none', transition: 'color 0.15s', flexShrink: 0,
         }}
           onMouseEnter={e => e.currentTarget.style.color = '#0F172A'}
           onMouseLeave={e => e.currentTarget.style.color = '#64748B'}
         >
-          <ArrowLeft size={15} /> Back
+          <ArrowLeft size={15} />
+          <span className="rh-back-text">Back</span>
         </Link>
 
-        {/* Centered logos — exact same treatment as landing page header */}
-        <div style={{
-          position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-          display: 'flex', alignItems: 'center', gap: '32px',
-        }}>
-          {/* VendorJunction */}
-          <img src="/logos/vendorjunction.png" alt="VendorJunction" style={{ height: '56px', width: 'auto', objectFit: 'contain' }} />
-          <div style={{ width: '1px', height: '40px', background: '#E2E8F0' }} />
-          {/* Microsoft */}
-          <img src="/logos/microsoft.png" alt="Microsoft" style={{ height: '44px', width: 'auto', objectFit: 'contain' }} />
-          <div style={{ width: '1px', height: '40px', background: '#E2E8F0' }} />
-          {/* KAMK — clip container to remove whitespace */}
-          <div style={{ width: '160px', height: '72px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <img src="/logos/kamk.png" alt="KAMK University Finland" style={{ width: '160px', height: 'auto', flexShrink: 0 }} />
+        {/* Centered logos — same 4-logo layout as landing */}
+        <div className="rh-logos">
+          <img className="rh-vj-img" src="/logos/vendorjunction.png" alt="VendorJunction" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
+          <div className="rh-divider" />
+          <img className="rh-ms-img" src="/logos/microsoft.png" alt="Microsoft" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
+          <div className="rh-divider" />
+          <div className="rh-kamk-wrap">
+            <img src="/logos/kamk.png" alt="KAMK University Finland" />
           </div>
-          <div style={{ width: '1px', height: '40px', background: '#E2E8F0' }} />
-          {/* Edukamu — clip container to remove whitespace */}
-          <div style={{ width: '160px', height: '72px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <img src="/logos/edukamu.png" alt="Edukamu" style={{ width: '160px', height: 'auto', flexShrink: 0 }} />
+          <div className="rh-divider" />
+          <div className="rh-edu-wrap">
+            <img src="/logos/edukamu.png" alt="Edukamu" />
           </div>
         </div>
 
         {/* Step pill */}
-        <div style={{ marginLeft: 'auto', flexShrink: 0 }}>
+        <div className="rh-step-pill" style={{ marginLeft: 'auto', flexShrink: 0 }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             background: 'rgba(13,148,136,0.1)', border: '1px solid rgba(13,148,136,0.2)',
@@ -293,12 +361,12 @@ export default function Register() {
               display: 'inline-block', padding: '4px 14px', marginBottom: '14px',
               background: 'rgba(13,148,136,0.1)', border: '1px solid rgba(13,148,136,0.2)',
               borderRadius: '100px', fontSize: '11px', fontWeight: '700',
-              color: '#A5B4FC', letterSpacing: '0.1em', textTransform: 'uppercase',
+              color: '#0D9488', letterSpacing: '0.1em', textTransform: 'uppercase',
             }}>
               Partner Application
             </div>
             <h1 style={{
-              fontSize: '32px', fontWeight: '800', color: '#F8FAFC',
+              fontSize: '32px', fontWeight: '800', color: '#0F172A',
               letterSpacing: '-0.03em', marginBottom: '8px',
             }}>
               Become a Partner
@@ -406,13 +474,16 @@ export default function Register() {
                             if (phoneError) setPhoneError('')
                           }}
                           isValid={(val, country) => {
-                            if (!val) return true // don't show red on empty before submit
+                            if (!val || val === country?.dialCode) return true
                             return validatePhone(val, country)
                           }}
                           enableSearch
                           inputProps={{ name: 'mobile' }}
                         />
                         {phoneError && <span className="form-error">{phoneError}</span>}
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', display: 'block' }}>
+                          Enter full number including area code — validated per country
+                        </span>
                       </div>
 
                       {/* Email */}
@@ -560,10 +631,19 @@ export default function Register() {
                           <PhoneInput
                             country="ae"
                             value={landlineValue}
-                            onChange={(val) => setLandlineValue(val)}
+                            onChange={(val, country) => {
+                              setLandlineValue(val)
+                              setLandlineCountry(country)
+                              if (landlineError) setLandlineError('')
+                            }}
+                            isValid={(val, country) => {
+                              if (!val || val === country?.dialCode) return true
+                              return validateLandline(val, country)
+                            }}
                             enableSearch
                             inputProps={{ name: 'landline' }}
                           />
+                          {landlineError && <span className="form-error">{landlineError}</span>}
                         </div>
                         <div className="form-group">
                           <label className="form-label">Website <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>(optional)</span></label>
@@ -620,11 +700,6 @@ export default function Register() {
                               inputMode="numeric"
                             />
                           </div>
-                          {turnoverRaw && (
-                            <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                              USD {Number(turnoverRaw).toLocaleString('en-US')}
-                            </span>
-                          )}
                         </div>
                       </div>
                     </div>

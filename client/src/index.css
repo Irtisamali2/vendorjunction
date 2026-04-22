@@ -832,3 +832,100 @@ tbody td {
     padding: 0 16px;
   }
 }
+
+/* ═══════════════════════════════════════════
+   LANDING PAGE — RESPONSIVE LAYOUT CLASSES
+   ═══════════════════════════════════════════ */
+
+/* Section wrapper */
+.landing-section-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+/* Hero: 2-col on desktop, 1-col on mobile */
+.landing-hero-inner {
+  display: flex;
+  align-items: center;
+  gap: 64px;
+}
+
+/* Stats: row on desktop */
+.landing-stats-band {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Programs: 3-col grid */
+.landing-programs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* Benefits: side-by-side */
+.landing-benefits-inner {
+  display: flex;
+  gap: 72px;
+  align-items: flex-start;
+}
+
+/* Benefits chips: 2-col */
+.landing-benefits-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  flex: 1;
+}
+
+/* Tablet — 768px */
+@media (max-width: 900px) {
+  .landing-section-inner {
+    padding: 0 28px;
+  }
+  .landing-hero-inner {
+    flex-direction: column;
+    gap: 40px;
+  }
+  .landing-hero-collab-panel {
+    width: 100% !important;
+    flex-direction: row !important;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .landing-programs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .landing-benefits-inner {
+    flex-direction: column;
+    gap: 36px;
+  }
+  .landing-benefits-chips {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Mobile — 600px */
+@media (max-width: 600px) {
+  .landing-section-inner {
+    padding: 0 20px;
+  }
+  .landing-hero-inner {
+    gap: 32px;
+  }
+  .landing-stats-band {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .landing-programs-grid {
+    grid-template-columns: 1fr;
+  }
+  .landing-benefits-chips {
+    grid-template-columns: 1fr;
+  }
+  .landing-nav-center {
+    display: none !important;
+  }
+}
