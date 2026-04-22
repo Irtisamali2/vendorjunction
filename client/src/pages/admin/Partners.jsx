@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Search, Filter, X, Building2, MapPin, Mail, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
@@ -25,6 +25,7 @@ function SkeletonCard() {
 
 export default function Partners() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [partners, setPartners] = useState([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
@@ -33,7 +34,7 @@ export default function Partners() {
 
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || '')
   const [companyTypeFilter, setCompanyTypeFilter] = useState('')
   const [sectorFilter, setSectorFilter] = useState('')
 

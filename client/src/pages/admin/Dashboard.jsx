@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Users, Clock, CheckCircle, XCircle, Zap,
@@ -15,12 +16,14 @@ function StatusBadge({ status }) {
   return <span className={`badge badge-${status}`}>{status}</span>
 }
 
-function StatCard({ icon: Icon, label, value, color, colorLight, delay, loading }) {
+function StatCard({ icon: Icon, label, value, color, colorLight, delay, loading, onClick }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
+      onClick={onClick}
+      whileHover={onClick ? { y: -3, boxShadow: `0 8px 24px ${color}22` } : {}}
       style={{
         background: 'var(--bg-card)',
         border: '1px solid var(--border-default)',
@@ -28,6 +31,8 @@ function StatCard({ icon: Icon, label, value, color, colorLight, delay, loading 
         padding: '24px',
         display: 'flex', flexDirection: 'column', gap: '16px',
         position: 'relative', overflow: 'hidden',
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'border-color 0.2s',
       }}
     >
       <div style={{
@@ -73,6 +78,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const [stats, setStats] = useState(null)
   const [recent, setRecent] = useState([])
   const [monthlyData, setMonthlyData] = useState([])
@@ -99,11 +105,11 @@ export default function Dashboard() {
   }, [])
 
   const STAT_CARDS = [
-    { icon: Users, label: 'Total Partners', value: stats?.total, color: '#0D9488', colorLight: 'rgba(13,148,136,0.12)' },
-    { icon: Clock, label: 'Pending Review', value: stats?.pending, color: '#F59E0B', colorLight: 'rgba(245,158,11,0.12)' },
-    { icon: CheckCircle, label: 'Approved', value: stats?.approved, color: '#10B981', colorLight: 'rgba(16,185,129,0.12)' },
-    { icon: XCircle, label: 'Rejected', value: stats?.rejected, color: '#EF4444', colorLight: 'rgba(239,68,68,0.12)' },
-    { icon: Zap, label: 'Today', value: stats?.today, color: '#0D9488', colorLight: 'rgba(139,92,246,0.12)' },
+    { icon: Users,       label: 'Total Partners', value: stats?.total,    color: '#0D9488', colorLight: 'rgba(13,148,136,0.12)',  onClick: () => navigate('/admin/partners') },
+    { icon: Clock,       label: 'Pending Review', value: stats?.pending,  color: '#F59E0B', colorLight: 'rgba(245,158,11,0.12)',  onClick: () => navigate('/admin/partners?status=pending') },
+    { icon: CheckCircle, label: 'Approved',        value: stats?.approved, color: '#10B981', colorLight: 'rgba(16,185,129,0.12)', onClick: () => navigate('/admin/partners?status=approved') },
+    { icon: XCircle,     label: 'Rejected',        value: stats?.rejected, color: '#EF4444', colorLight: 'rgba(239,68,68,0.12)',  onClick: () => navigate('/admin/partners?status=rejected') },
+    { icon: Zap,         label: 'Today',           value: stats?.today,   color: '#0D9488', colorLight: 'rgba(13,148,136,0.12)',  onClick: () => navigate('/admin/partners') },
   ]
 
   return (
@@ -249,17 +255,23 @@ export default function Dashboard() {
                 </tr>
               ) : (
                 recent.map((p) => (
-                  <tr key={p.id}>
+                  <tr
+                    key={p.id}
+                    onClick={() => navigate(`/admin/partners/${p.id}`)}
+                    style={{ cursor: 'pointer' }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-surface-2)'}
+                    onMouseLeave={e => e.currentTarget.style.background = ''}
+                  >
                     <td style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
                       {p.title} {p.first_name} {p.last_name}
                     </td>
-                    <td>{p.company_name}</td>
+                    <td style={{ color: 'var(--accent-primary)', fontWeight: '500' }}>{p.company_name}</td>
                     <td style={{ color: 'var(--text-muted)' }}>
                       {p.city}, {p.country}
                     </td>
                     <td><StatusBadge status={p.status} /></td>
                     <td style={{ color: 'var(--text-muted)', fontSize: '12px' }}>
-                      {p.created_at ? format(new Date(p.created_at), 'MMM dd, yyyy') : '-'}
+                      {p.submitted_at ? format(new Date(p.submitted_at), 'MMM dd, yyyy') : '-'}
                     </td>
                   </tr>
                 ))
