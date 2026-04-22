@@ -87,25 +87,59 @@ export default function Register() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(null)
+
+  // Mobile phone
   const [phoneValue, setPhoneValue] = useState('')
+  const [phoneCountry, setPhoneCountry] = useState(null)
+  const [phoneError, setPhoneError] = useState('')
+
+  // Landline
+  const [landlineValue, setLandlineValue] = useState('')
+
+  // Annual turnover — formatted display
+  const [turnoverDisplay, setTurnoverDisplay] = useState('')
+  const [turnoverRaw, setTurnoverRaw] = useState('')
 
   const { register, handleSubmit, trigger, formState: { errors } } = useForm({ mode: 'onBlur' })
 
   const step1Fields = ['title', 'first_name', 'last_name', 'job_title', 'mobile', 'email']
 
+  // Validate phone number length against country format
+  const validatePhone = (value, country) => {
+    if (!value || value.length < 5) return false
+    if (country?.format) {
+      const expectedDigits = (country.format.match(/\./g) || []).length
+      // value includes dial code digits
+      if (value.length < expectedDigits) return false
+    }
+    return true
+  }
+
   const handleNext = async () => {
     const valid = await trigger(step1Fields)
-    if (!phoneValue || phoneValue.length < 7) {
-      toast.error('Please enter a valid mobile number')
+    if (!validatePhone(phoneValue, phoneCountry)) {
+      setPhoneError(`Please enter a valid${phoneCountry ? ' ' + phoneCountry.name : ''} mobile number`)
       return
     }
+    setPhoneError('')
     if (valid) setStep(2)
+  }
+
+  const handleTurnoverChange = (e) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '')
+    setTurnoverRaw(raw)
+    setTurnoverDisplay(raw ? Number(raw).toLocaleString('en-US') : '')
   }
 
   const onSubmit = async (data) => {
     setLoading(true)
     try {
-      const payload = { ...data, mobile: phoneValue }
+      const payload = {
+        ...data,
+        mobile: '+' + phoneValue,
+        landline: landlineValue ? '+' + landlineValue : '',
+        annual_turnover: turnoverRaw || '',
+      }
       const res = await api.post('/api/partners/register', payload)
       setSuccess(res.data)
       toast.success('Application submitted successfully!')
@@ -185,13 +219,14 @@ export default function Register() {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
 
-      {/* Sticky header */}
+      {/* Sticky header — white, same style as landing nav */}
       <header style={{
         position: 'sticky', top: 0, zIndex: 100,
-        height: '68px',
-        background: 'rgba(10,14,26,0.95)',
+        height: '88px',
+        background: 'rgba(255,255,255,0.97)',
         backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        borderBottom: '1px solid #E2E8F0',
+        boxShadow: '0 1px 12px rgba(0,0,0,0.06)',
         display: 'flex', alignItems: 'center',
         padding: '0 40px',
       }}>
@@ -201,41 +236,32 @@ export default function Register() {
           color: '#64748B', fontSize: '13px', fontWeight: '500',
           textDecoration: 'none', transition: 'color 0.15s', flexShrink: 0,
         }}
-          onMouseEnter={e => e.currentTarget.style.color = '#F8FAFC'}
+          onMouseEnter={e => e.currentTarget.style.color = '#0F172A'}
           onMouseLeave={e => e.currentTarget.style.color = '#64748B'}
         >
           <ArrowLeft size={15} /> Back
         </Link>
 
-        {/* Centered logos */}
+        {/* Centered logos — exact same treatment as landing page header */}
         <div style={{
-          display: 'flex', alignItems: 'center', gap: '0',
           position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', alignItems: 'center', gap: '32px',
         }}>
-          {[
-            { src: '/logos/kamk.png', alt: 'KAMK University' },
-            { src: '/logos/microsoft.png', alt: 'Microsoft' },
-            { src: '/logos/edukamu.png', alt: 'Edukamu' },
-            { src: '/logos/vendorjunction.png', alt: 'VendorJunction' },
-          ].map((logo, i, arr) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{ padding: '0 20px' }}>
-                <img
-                  src={logo.src} alt={logo.alt}
-                  style={{
-                    height: '26px', width: 'auto', objectFit: 'contain',
-                    filter: 'brightness(0) invert(1)', opacity: 0.65,
-                    display: 'block', transition: 'opacity 0.2s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '0.65'}
-                />
-              </div>
-              {i < arr.length - 1 && (
-                <div style={{ width: '1px', height: '22px', background: 'rgba(255,255,255,0.08)' }} />
-              )}
-            </div>
-          ))}
+          {/* VendorJunction */}
+          <img src="/logos/vendorjunction.png" alt="VendorJunction" style={{ height: '56px', width: 'auto', objectFit: 'contain' }} />
+          <div style={{ width: '1px', height: '40px', background: '#E2E8F0' }} />
+          {/* Microsoft */}
+          <img src="/logos/microsoft.png" alt="Microsoft" style={{ height: '44px', width: 'auto', objectFit: 'contain' }} />
+          <div style={{ width: '1px', height: '40px', background: '#E2E8F0' }} />
+          {/* KAMK — clip container to remove whitespace */}
+          <div style={{ width: '160px', height: '72px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <img src="/logos/kamk.png" alt="KAMK University Finland" style={{ width: '160px', height: 'auto', flexShrink: 0 }} />
+          </div>
+          <div style={{ width: '1px', height: '40px', background: '#E2E8F0' }} />
+          {/* Edukamu — clip container to remove whitespace */}
+          <div style={{ width: '160px', height: '72px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <img src="/logos/edukamu.png" alt="Edukamu" style={{ width: '160px', height: 'auto', flexShrink: 0 }} />
+          </div>
         </div>
 
         {/* Step pill */}
@@ -244,7 +270,7 @@ export default function Register() {
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             background: 'rgba(13,148,136,0.1)', border: '1px solid rgba(13,148,136,0.2)',
             borderRadius: '100px', padding: '5px 14px',
-            fontSize: '12px', color: '#A5B4FC', fontWeight: '600',
+            fontSize: '12px', color: '#0D9488', fontWeight: '600',
           }}>
             Step {step} / 2
           </div>
@@ -374,10 +400,19 @@ export default function Register() {
                         <PhoneInput
                           country="ae"
                           value={phoneValue}
-                          onChange={(val) => setPhoneValue(val)}
+                          onChange={(val, country) => {
+                            setPhoneValue(val)
+                            setPhoneCountry(country)
+                            if (phoneError) setPhoneError('')
+                          }}
+                          isValid={(val, country) => {
+                            if (!val) return true // don't show red on empty before submit
+                            return validatePhone(val, country)
+                          }}
                           enableSearch
                           inputProps={{ name: 'mobile' }}
                         />
+                        {phoneError && <span className="form-error">{phoneError}</span>}
                       </div>
 
                       {/* Email */}
@@ -522,7 +557,13 @@ export default function Register() {
                       <div className="grid-2">
                         <div className="form-group">
                           <label className="form-label">Landline <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>(optional)</span></label>
-                          <input className="form-input" placeholder="+971 4 000 0000" {...register('landline')} />
+                          <PhoneInput
+                            country="ae"
+                            value={landlineValue}
+                            onChange={(val) => setLandlineValue(val)}
+                            enableSearch
+                            inputProps={{ name: 'landline' }}
+                          />
                         </div>
                         <div className="form-group">
                           <label className="form-label">Website <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>(optional)</span></label>
@@ -565,7 +606,25 @@ export default function Register() {
                         </div>
                         <div className="form-group">
                           <label className="form-label">Annual Turnover USD <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>(optional)</span></label>
-                          <input className="form-input" type="number" min="0" placeholder="500000" {...register('annual_turnover')} />
+                          <div style={{ position: 'relative' }}>
+                            <span style={{
+                              position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)',
+                              color: 'var(--text-muted)', fontSize: '14px', pointerEvents: 'none',
+                            }}>$</span>
+                            <input
+                              className="form-input"
+                              style={{ paddingLeft: '28px' }}
+                              placeholder="0"
+                              value={turnoverDisplay}
+                              onChange={handleTurnoverChange}
+                              inputMode="numeric"
+                            />
+                          </div>
+                          {turnoverRaw && (
+                            <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                              USD {Number(turnoverRaw).toLocaleString('en-US')}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
