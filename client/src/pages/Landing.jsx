@@ -137,7 +137,7 @@ const STYLES = `
     display: grid;
     grid-template-columns: 360px 1fr;
     gap: 64px;
-    align-items: start;
+    align-items: center;
   }
   .l-benefit-grid {
     display: grid;
