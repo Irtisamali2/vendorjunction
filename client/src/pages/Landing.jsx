@@ -594,7 +594,7 @@ export default function Landing() {
             {/* Sub-label — "Microdegree Program" */}
             <motion.p
               initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13, duration: 0.45 }}
-              style={{ fontSize: 'clamp(28px, 3.2vw, 46px)', fontWeight: '700', color: '#003087', marginBottom: '20px', letterSpacing: '-0.02em' }}
+              style={{ fontSize: 'clamp(28px, 3.2vw, 46px)', fontWeight: '700', color: '#499ecb', marginBottom: '20px', letterSpacing: '-0.02em' }}
             >
               Microdegree Program
             </motion.p>
@@ -760,8 +760,7 @@ export default function Landing() {
                   10 Reasons to Become a Partner
                 </h3>
                 <p style={{ fontSize: '14px', lineHeight: 1.8, opacity: 0.84, marginBottom: '28px' }}>
-                  From Microsoft co-branding rights to dedicated business development
-                  support, our ecosystem is built for your success.
+                  From Microsoft co-branding rights to dedicated business development support, our ecosystem drives growth with a robust, margin-focused partnership and continuous enablement.
                 </p>
                 <button className="l-btn-primary" onClick={() => navigate('/register')}
                   style={{ background: 'white', color: '#0D9488', boxShadow: '0 2px 10px rgba(0,0,0,0.12)', fontSize: '14px', padding: '12px 28px' }}
