@@ -426,35 +426,35 @@ export default function Landing() {
   }, [])
 
   const programs = [
-    { name: 'Cloud & Cybersecurity',  desc: 'Architect cloud environments and defend against modern cyber threats.',               img: '/courses/cybersecurity.png',   badge: 'Cloud & Security',        badgeColor: '#2563EB' },
-    { name: 'AI Developer',           desc: 'Design and deploy intelligent, AI-powered solutions at enterprise scale.',           img: '/courses/ai-developer.png',    badge: 'Artificial Intelligence', badgeColor: '#7C3AED' },
-    { name: 'Data Engineer',          desc: "Build robust data pipelines that power the world's data infrastructure.",            img: '/courses/data-engineer.png',   badge: 'Data Infrastructure',     badgeColor: '#D97706' },
-    { name: 'Data Analyst',           desc: 'Transform raw data into strategic insights that drive confident decisions.',         img: '/courses/data-analyst.png',    badge: 'Analytics & BI',          badgeColor: '#059669' },
-    { name: 'Power Platform BI',      desc: 'Automate workflows and build powerful business intelligence dashboards.',           img: '/courses/power-platform.png',  badge: 'Business Intelligence',   badgeColor: '#D97706' },
-    { name: 'AI Agent',               desc: 'Build autonomous AI agents that reason, plan, and solve complex business problems.', img: '/courses/ai-agent.png',        badge: 'Autonomous AI',           badgeColor: '#DC2626' },
+    { name: 'Cloud & Cybersecurity', desc: 'Architect cloud environments and defend against modern cyber threats.', img: '/courses/cybersecurity.png', badge: 'Cloud & Security', badgeColor: '#2563EB' },
+    { name: 'AI Developer', desc: 'Design and deploy intelligent, AI-powered solutions at enterprise scale.', img: '/courses/ai-developer.png', badge: 'Artificial Intelligence', badgeColor: '#7C3AED' },
+    { name: 'Data Engineer', desc: "Build robust data pipelines that power the world's data infrastructure.", img: '/courses/data-engineer.png', badge: 'Data Infrastructure', badgeColor: '#D97706' },
+    { name: 'Data Analyst', desc: 'Transform raw data into strategic insights that drive confident decisions.', img: '/courses/data-analyst.png', badge: 'Analytics & BI', badgeColor: '#059669' },
+    { name: 'Power Platform BI', desc: 'Automate workflows and build powerful business intelligence dashboards.', img: '/courses/power-platform.png', badge: 'Business Intelligence', badgeColor: '#D97706' },
+    { name: 'AI Agent', desc: 'Build autonomous AI agents that reason, plan, and solve complex business problems.', img: '/courses/ai-agent.png', badge: 'Autonomous AI', badgeColor: '#DC2626' },
   ]
 
   const benefits = [
-    'Robust Partnership', 'Margin-Driven Revenue',
-    'Microsoft Partnership', 'Global Credentials',
-    'Systems & Processes', 'Joint Planning',
-    'Go To Market', 'Business Development',
-    'Marketing Support', 'Enablement & Trainings',
+    'Robust Partnership', 'Marketing Support',
+    'Microsoft Partnership', 'Go To Market',
+    'Global Credentials', 'Joint Planning',
+    'Margin-Driven Revenue', 'Business Development',
+    'Systems & Processes', 'Enablement & Trainings',
   ]
 
   const stats = [
-    { value: 46,    suffix: '+', label: 'Partner Organisations', Icon: Users },
-    { value: 39,    suffix: '',  label: 'Countries Reached',     Icon: MapPin },
-    { value: 6,     suffix: '',  label: 'Microdegree Programs',  Icon: BookOpen },
-    { value: 70000, suffix: '+', label: 'Learners',              Icon: TrendingUp },
+    { value: 46, suffix: '+', label: 'Partner Organisations', Icon: Users },
+    { value: 39, suffix: '', label: 'Countries Reached', Icon: MapPin },
+    { value: 6, suffix: '', label: 'Microdegree Programs', Icon: BookOpen },
+    { value: 70000, suffix: '+', label: 'Learners', Icon: TrendingUp },
   ]
 
   const featureTags = [
-    { Icon: Shield,         label: 'Microsoft Certified' },
-    { Icon: Award,          label: 'EU ECTS Credits' },
-    { Icon: Globe,          label: 'Accredited Program' },
-    { Icon: Briefcase,      label: "Int'l & Local Jobs" },
-    { Icon: GraduationCap,  label: 'EU University Pathway' },
+    { Icon: Shield, label: 'Microsoft Certified' },
+    { Icon: Award, label: 'EU ECTS Credits' },
+    { Icon: Globe, label: 'Accredited Program' },
+    { Icon: Briefcase, label: "Int'l & Local Jobs" },
+    { Icon: GraduationCap, label: 'EU University Pathway' },
   ]
 
   return (
@@ -591,10 +591,10 @@ export default function Landing() {
               Microsoft Skills For Jobs
             </motion.h1>
 
-            {/* Sub-label — "Microdegree Program" in teal */}
+            {/* Sub-label — "Microdegree Program" */}
             <motion.p
               initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13, duration: 0.45 }}
-              style={{ fontSize: '20px', fontWeight: '700', color: '#0D9488', marginBottom: '20px', letterSpacing: '-0.01em' }}
+              style={{ fontSize: 'clamp(28px, 3.2vw, 46px)', fontWeight: '700', color: '#1E3A5F', marginBottom: '20px', letterSpacing: '-0.02em' }}
             >
               Microdegree Program
             </motion.p>
@@ -605,7 +605,7 @@ export default function Landing() {
               style={{ fontSize: '15.5px', color: '#475569', lineHeight: 1.85, maxWidth: '640px', marginBottom: '28px' }}
             >
               Join the global network of accredited partners delivering Microsoft-certified
-              Microdegree certifications with EU ECTS credits in AI, Cloud & Cybersecurity,
+              Microdegree Program certifications with EU ECTS credits in AI, Cloud & Cybersecurity,
               Data Engineering, Data Analytics, Power Platform BI and AI Agent.
             </motion.p>
 
@@ -736,8 +736,8 @@ export default function Landing() {
                 Ready to Join the Global Partners Ecosystem?
               </h2>
               <p className="l-section-sub" style={{ maxWidth: '540px' }}>
-                Become an accredited Microsoft Microdegree delivery partner and grow
-                your business within a structured global partner network.
+                Become an accredited delivery partner for the Microsoft Skills for Jobs Microdegree Program and
+                expand your business with a structured, globally connected partner ecosystem.
               </p>
             </motion.div>
 
