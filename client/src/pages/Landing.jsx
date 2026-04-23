@@ -594,7 +594,7 @@ export default function Landing() {
             {/* Sub-label — "Microdegree Program" */}
             <motion.p
               initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13, duration: 0.45 }}
-              style={{ fontSize: 'clamp(28px, 3.2vw, 46px)', fontWeight: '700', color: '#1E3A5F', marginBottom: '20px', letterSpacing: '-0.02em' }}
+              style={{ fontSize: 'clamp(28px, 3.2vw, 46px)', fontWeight: '700', color: '#003087', marginBottom: '20px', letterSpacing: '-0.02em' }}
             >
               Microdegree Program
             </motion.p>
