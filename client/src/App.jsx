@@ -25,6 +25,7 @@ import LicenseRequests from './pages/admin/LicenseRequests'
 
 // Partner pages
 import PartnerDashboard from './pages/partner/PartnerDashboard'
+import PartnerLicenseRequests from './pages/partner/LicenseRequests'
 
 export default function App() {
   return (
@@ -85,6 +86,7 @@ export default function App() {
           }
         >
           <Route index element={<PartnerDashboard />} />
+          <Route path="licenses" element={<PartnerLicenseRequests />} />
         </Route>
       </Routes>
     </AuthProvider>
