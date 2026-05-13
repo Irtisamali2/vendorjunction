@@ -1,46 +1,61 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, FileText, Clock, CheckCircle, XCircle, X, Package } from 'lucide-react'
+import { Send, FileText, Clock, CheckCircle, XCircle, X, Package, Plus, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
 
 const STATUS_COLORS = {
-  pending: { color: '#F59E0B', bg: 'rgba(245,158,11,0.12)', Icon: Clock, label: 'Pending' },
-  approved: { color: '#10B981', bg: 'rgba(16,185,129,0.12)', Icon: CheckCircle, label: 'Approved' },
-  rejected: { color: '#EF4444', bg: 'rgba(239,68,68,0.12)', Icon: XCircle, label: 'Rejected' },
+  pending:  { color: '#F59E0B', bg: 'rgba(245,158,11,0.12)',  Icon: Clock,        label: 'Pending' },
+  approved: { color: '#10B981', bg: 'rgba(16,185,129,0.12)', Icon: CheckCircle,  label: 'Approved' },
+  rejected: { color: '#EF4444', bg: 'rgba(239,68,68,0.12)',  Icon: XCircle,      label: 'Rejected' },
 }
 
 const STATUS_TABS = [
   { value: '', label: 'All' },
-  { value: 'pending', label: 'Pending' },
+  { value: 'pending',  label: 'Pending' },
   { value: 'approved', label: 'Approved' },
   { value: 'rejected', label: 'Rejected' },
 ]
 
+const emptyItem = () => ({ program_id: '', licenses: '' })
+
 function RequestModal({ programs, onClose, onSuccess }) {
-  const [selectedProgram, setSelectedProgram] = useState('')
-  const [licenses, setLicenses] = useState('')
+  const [items, setItems] = useState([emptyItem()])
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  const chosen = programs.find(p => String(p.id) === String(selectedProgram))
-  const estTotal = chosen && licenses ? parseInt(licenses) * chosen.credits * Number(chosen.credit_unit_price) : 0
+  const addItem = () => setItems(prev => [...prev, emptyItem()])
+  const removeItem = (idx) => setItems(prev => prev.filter((_, i) => i !== idx))
+  const updateItem = (idx, field, val) => setItems(prev => prev.map((item, i) => i === idx ? { ...item, [field]: val } : item))
+
+  const lineItems = items.map(item => {
+    const prog = programs.find(p => String(p.id) === String(item.program_id))
+    const qty = parseInt(item.licenses) || 0
+    const subtotal = prog && qty > 0 ? qty * prog.credits * Number(prog.credit_unit_price) : 0
+    return { prog, qty, subtotal }
+  })
+
+  const grandTotal = lineItems.reduce((s, l) => s + l.subtotal, 0)
+  const hasValidItems = lineItems.some(l => l.prog && l.qty > 0)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!selectedProgram || !licenses || parseInt(licenses) < 1) {
-      toast.error('Please select a program and enter a valid number of licenses')
+    const validItems = items.filter(item => item.program_id && item.licenses && parseInt(item.licenses) >= 1)
+    if (!validItems.length) {
+      toast.error('Please add at least one program with a valid license count')
       return
     }
     setSubmitting(true)
     try {
       await api.post('/api/license-requests', {
-        program_id: parseInt(selectedProgram),
-        requested_licenses: parseInt(licenses),
+        items: validItems.map(item => ({
+          program_id: parseInt(item.program_id),
+          requested_licenses: parseInt(item.licenses),
+        })),
         notes: notes.trim() || undefined,
       })
-      toast.success('License request submitted')
+      toast.success(`${validItems.length} license request(s) submitted`)
       onSuccess()
       onClose()
     } catch (err) {
@@ -56,7 +71,7 @@ function RequestModal({ programs, onClose, onSuccess }) {
         className="modal"
         initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
         transition={{ duration: 0.2 }}
-        style={{ maxWidth: '480px' }}
+        style={{ maxWidth: '540px' }}
       >
         <div className="modal-header">
           <h3 className="modal-title">New License Request</h3>
@@ -64,45 +79,89 @@ function RequestModal({ programs, onClose, onSuccess }) {
         </div>
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div className="form-group">
-              <label className="form-label">Program <span className="required">*</span></label>
-              <select className="form-select" value={selectedProgram} onChange={e => setSelectedProgram(e.target.value)} required>
-                <option value="">Select a program</option>
-                {programs.map(p => (
-                  <option key={p.id} value={p.id}>
-                    {p.program_name} — {p.credits} credits @ ${Number(p.credit_unit_price).toFixed(2)}
-                  </option>
+
+            {/* Program rows */}
+            <div>
+              <label className="form-label" style={{ marginBottom: '10px', display: 'block' }}>
+                Programs <span className="required">*</span>
+              </label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {items.map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <select
+                      className="form-select"
+                      style={{ flex: 2 }}
+                      value={item.program_id}
+                      onChange={e => updateItem(idx, 'program_id', e.target.value)}
+                    >
+                      <option value="">Select program</option>
+                      {programs.map(p => (
+                        <option key={p.id} value={p.id}>
+                          {p.program_name} — {p.credits} cr @ ${Number(p.credit_unit_price).toFixed(2)}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      className="form-input"
+                      style={{ flex: 1, minWidth: '80px' }}
+                      type="number" min="1" placeholder="Qty"
+                      value={item.licenses}
+                      onChange={e => updateItem(idx, 'licenses', e.target.value)}
+                    />
+                    {items.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeItem(idx)}
+                        style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', flexShrink: 0 }}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    )}
+                  </div>
                 ))}
-              </select>
+              </div>
+              <button
+                type="button"
+                onClick={addItem}
+                style={{
+                  marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px',
+                  fontSize: '13px', color: 'var(--accent-primary)', fontWeight: '600',
+                  background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0',
+                }}
+              >
+                <Plus size={14} /> Add another program
+              </button>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Number of Licenses <span className="required">*</span></label>
-              <input
-                className="form-input" type="number" min="1" placeholder="e.g. 10"
-                value={licenses} onChange={e => setLicenses(e.target.value)} required
-              />
-            </div>
-
-            {chosen && licenses && parseInt(licenses) > 0 && (
+            {/* Cost breakdown */}
+            {hasValidItems && (
               <div style={{ padding: '14px', background: 'var(--bg-surface)', borderRadius: '10px', border: '1px solid var(--border-default)' }}>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px' }}>Cost Estimate</div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '5px' }}>
-                  <span>Credits per license</span><span>{chosen.credits}</span>
+                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px' }}>
+                  Cost Estimate
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '5px' }}>
-                  <span>Total credits</span><span>{(parseInt(licenses) * chosen.credits).toLocaleString()}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', fontWeight: '700', color: 'var(--accent-gold)', borderTop: '1px solid var(--border-default)', paddingTop: '10px', marginTop: '5px' }}>
-                  <span>Est. Total</span>
-                  <span>${estTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                {lineItems.map((l, idx) => {
+                  if (!l.prog || l.qty < 1) return null
+                  return (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                      <span>{l.prog.program_name} × {l.qty} lic.</span>
+                      <span>${l.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    </div>
+                  )
+                })}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', fontWeight: '700', color: 'var(--accent-gold)', borderTop: '1px solid var(--border-default)', paddingTop: '10px', marginTop: '6px' }}>
+                  <span>Grand Total</span>
+                  <span>${grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
             )}
 
             <div className="form-group">
               <label className="form-label">Notes (optional)</label>
-              <textarea className="form-textarea" rows={3} placeholder="Any additional context for this request..." value={notes} onChange={e => setNotes(e.target.value)} />
+              <textarea
+                className="form-textarea" rows={3}
+                placeholder="Any additional context for this request..."
+                value={notes} onChange={e => setNotes(e.target.value)}
+              />
             </div>
 
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
@@ -153,7 +212,11 @@ export default function PartnerLicenseRequests() {
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px' }}><div className="spinner" /></div>
 
   const filtered = tab ? requests.filter(r => r.status === tab) : requests
-  const counts = { pending: requests.filter(r => r.status === 'pending').length, approved: requests.filter(r => r.status === 'approved').length, rejected: requests.filter(r => r.status === 'rejected').length }
+  const counts = {
+    pending:  requests.filter(r => r.status === 'pending').length,
+    approved: requests.filter(r => r.status === 'approved').length,
+    rejected: requests.filter(r => r.status === 'rejected').length,
+  }
 
   const isApproved = profile?.status === 'approved'
 
@@ -263,6 +326,11 @@ export default function PartnerLicenseRequests() {
                           }}>
                             <StatusIcon size={12} /> {sc.label}
                           </span>
+                          {req.reference_number && (
+                            <span style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+                              {req.reference_number}
+                            </span>
+                          )}
                         </div>
                         <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
                           <div>

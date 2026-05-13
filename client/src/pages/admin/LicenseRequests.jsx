@@ -1,25 +1,27 @@
 import { useEffect, useState, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, CheckCircle, XCircle, Clock, X, FileText, Building2, RefreshCw } from 'lucide-react'
+import { Search, CheckCircle, XCircle, Clock, X, FileText, Building2, RefreshCw, Bell } from 'lucide-react'
 import { format } from 'date-fns'
 import api from '../../utils/api'
 import toast from 'react-hot-toast'
 
-const STATUS_TABS = [
-  { value: '', label: 'All' },
-  { value: 'pending', label: 'Pending', color: '#F59E0B' },
-  { value: 'approved', label: 'Approved', color: '#10B981' },
-  { value: 'rejected', label: 'Rejected', color: '#EF4444' },
+const TABS = [
+  { key: '',         label: 'All' },
+  { key: 'new',      label: 'New',      color: '#6366F1' },
+  { key: 'pending',  label: 'Pending',  color: '#F59E0B' },
+  { key: 'approved', label: 'Approved', color: '#10B981' },
+  { key: 'rejected', label: 'Rejected', color: '#EF4444' },
 ]
 
 const STATUS_COLORS = {
-  pending: { color: '#F59E0B', bg: 'rgba(245,158,11,0.12)', Icon: Clock },
+  pending:  { color: '#F59E0B', bg: 'rgba(245,158,11,0.12)',  Icon: Clock },
   approved: { color: '#10B981', bg: 'rgba(16,185,129,0.12)', Icon: CheckCircle },
-  rejected: { color: '#EF4444', bg: 'rgba(239,68,68,0.12)', Icon: XCircle },
+  rejected: { color: '#EF4444', bg: 'rgba(239,68,68,0.12)',  Icon: XCircle },
 }
 
 function ReviewModal({ request, onClose, onDone }) {
-  const [decision, setDecision] = useState(null) // 'approved' | 'rejected'
+  const [decision, setDecision] = useState(null)
   const [adminNotes, setAdminNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
@@ -57,8 +59,13 @@ function ReviewModal({ request, onClose, onDone }) {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Request summary */}
           <div style={{ padding: '16px', background: 'var(--bg-surface)', borderRadius: '10px', border: '1px solid var(--border-default)' }}>
+            {request.reference_number && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Reference</span>
+                <span style={{ fontSize: '13px', color: 'var(--accent-primary)', fontWeight: '700', fontFamily: 'monospace' }}>{request.reference_number}</span>
+              </div>
+            )}
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
               <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Partner</span>
               <span style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '600' }}>{request.company_name}</span>
@@ -89,7 +96,6 @@ function ReviewModal({ request, onClose, onDone }) {
             )}
           </div>
 
-          {/* Decision buttons */}
           <div>
             <label className="form-label" style={{ marginBottom: '8px', display: 'block' }}>Decision <span className="required">*</span></label>
             <div style={{ display: 'flex', gap: '10px' }}>
@@ -122,7 +128,6 @@ function ReviewModal({ request, onClose, onDone }) {
             </div>
           </div>
 
-          {/* Admin notes */}
           <div className="form-group">
             <label className="form-label">Admin Notes (visible to partner)</label>
             <textarea
@@ -153,13 +158,16 @@ function ReviewModal({ request, onClose, onDone }) {
 }
 
 export default function LicenseRequests() {
+  const [searchParams] = useSearchParams()
+  const initTab = searchParams.get('filter') === 'new' ? 'new' : (searchParams.get('status') || '')
+
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(true)
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const LIMIT = 20
 
-  const [statusFilter, setStatusFilter] = useState('')
+  const [activeTab, setActiveTab] = useState(initTab)
   const [searchInput, setSearchInput] = useState('')
   const [search, setSearch] = useState('')
   const [reviewItem, setReviewItem] = useState(null)
@@ -168,7 +176,8 @@ export default function LicenseRequests() {
     setLoading(true)
     try {
       const params = new URLSearchParams({ page, limit: LIMIT })
-      if (statusFilter) params.set('status', statusFilter)
+      if (activeTab === 'new') params.set('filter', 'new')
+      else if (activeTab) params.set('status', activeTab)
       if (search) params.set('search', search)
       const res = await api.get(`/api/license-requests?${params}`)
       setRequests(res.data.data || [])
@@ -178,7 +187,7 @@ export default function LicenseRequests() {
     } finally {
       setLoading(false)
     }
-  }, [page, statusFilter, search])
+  }, [page, activeTab, search])
 
   useEffect(() => { fetchRequests() }, [fetchRequests])
 
@@ -189,9 +198,8 @@ export default function LicenseRequests() {
   }
 
   const pages = Math.ceil(total / LIMIT)
-
-  // Count by status for tab badges
   const pendingCount = requests.filter(r => r.status === 'pending').length
+  const newCount = requests.filter(r => r.is_new).length
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -208,30 +216,33 @@ export default function LicenseRequests() {
         </button>
       </div>
 
-      {/* Status Tabs */}
+      {/* Tabs */}
       <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-surface)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border-default)', width: 'fit-content', flexWrap: 'wrap' }}>
-        {STATUS_TABS.map(tab => {
-          const active = statusFilter === tab.value
+        {TABS.map(tab => {
+          const active = activeTab === tab.key
+          const badgeCount = tab.key === 'new' ? newCount : tab.key === 'pending' ? pendingCount : 0
           return (
             <button
-              key={tab.value}
-              onClick={() => { setStatusFilter(tab.value); setPage(1) }}
+              key={tab.key}
+              onClick={() => { setActiveTab(tab.key); setPage(1) }}
               style={{
                 padding: '7px 18px', borderRadius: '9px', cursor: 'pointer',
                 border: 'none', fontSize: '13px', fontWeight: active ? '700' : '500',
                 background: active ? 'var(--bg-primary)' : 'transparent',
                 color: active ? (tab.color || 'var(--text-primary)') : 'var(--text-muted)',
                 boxShadow: active ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
-                transition: 'all 0.15s',
+                transition: 'all 0.15s', display: 'flex', alignItems: 'center', gap: '6px',
               }}
             >
+              {tab.key === 'new' && <Bell size={13} />}
               {tab.label}
-              {tab.value === 'pending' && pendingCount > 0 && (
+              {badgeCount > 0 && (
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  marginLeft: '6px', width: '18px', height: '18px', borderRadius: '50%',
-                  background: '#F59E0B', color: 'white', fontSize: '10px', fontWeight: '800',
-                }}>{pendingCount}</span>
+                  minWidth: '18px', height: '18px', borderRadius: '9px', padding: '0 4px',
+                  background: tab.color || 'var(--accent-primary)',
+                  color: 'white', fontSize: '10px', fontWeight: '800',
+                }}>{badgeCount}</span>
               )}
             </button>
           )
@@ -244,7 +255,7 @@ export default function LicenseRequests() {
           <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             className="form-input"
-            placeholder="Search by company, program, or email..."
+            placeholder="Search by company, program, ref number..."
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
             style={{ paddingLeft: '36px' }}
@@ -265,14 +276,14 @@ export default function LicenseRequests() {
         ) : requests.length === 0 ? (
           <div className="empty-state" style={{ padding: '60px' }}>
             <FileText size={40} />
-            <p>{statusFilter ? `No ${statusFilter} requests` : 'No license requests yet'}</p>
+            <p>{activeTab === 'new' ? 'No new requests' : activeTab ? `No ${activeTab} requests` : 'No license requests yet'}</p>
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-default)' }}>
-                  {['Partner', 'Program', 'Licenses', 'Est. Value', 'Status', 'Notes', 'Submitted', 'Action'].map(h => (
+                  {['Ref #', 'Partner', 'Program', 'Licenses', 'Est. Value', 'Status', 'Notes', 'Submitted', 'Action'].map(h => (
                     <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: '11px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
                       {h}
                     </th>
@@ -290,10 +301,24 @@ export default function LicenseRequests() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: i * 0.02 }}
-                      style={{ borderBottom: '1px solid var(--border-default)' }}
+                      style={{ borderBottom: '1px solid var(--border-default)', background: req.is_new ? 'rgba(99,102,241,0.04)' : 'transparent' }}
                       onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-surface-2)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                      onMouseLeave={e => e.currentTarget.style.background = req.is_new ? 'rgba(99,102,241,0.04)' : 'transparent'}
                     >
+                      <td style={{ padding: '14px 16px' }}>
+                        {req.reference_number ? (
+                          <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--accent-primary)', fontFamily: 'monospace' }}>
+                            {req.reference_number}
+                          </span>
+                        ) : (
+                          <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>—</span>
+                        )}
+                        {req.is_new ? (
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', marginLeft: '6px', padding: '1px 6px', borderRadius: '6px', background: 'rgba(99,102,241,0.15)', fontSize: '9px', fontWeight: '800', color: '#6366F1', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            new
+                          </div>
+                        ) : null}
+                      </td>
                       <td style={{ padding: '14px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'var(--bg-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -339,20 +364,9 @@ export default function LicenseRequests() {
                       </td>
                       <td style={{ padding: '14px 16px' }}>
                         {req.status === 'pending' ? (
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => setReviewItem(req)}
-                          >
-                            Review
-                          </button>
+                          <button className="btn btn-primary btn-sm" onClick={() => setReviewItem(req)}>Review</button>
                         ) : (
-                          <button
-                            className="btn btn-ghost btn-sm"
-                            onClick={() => setReviewItem(req)}
-                            style={{ fontSize: '11px' }}
-                          >
-                            View
-                          </button>
+                          <button className="btn btn-ghost btn-sm" onClick={() => setReviewItem(req)} style={{ fontSize: '11px' }}>View</button>
                         )}
                       </td>
                     </motion.tr>
@@ -373,14 +387,9 @@ export default function LicenseRequests() {
         </div>
       )}
 
-      {/* Review Modal */}
       <AnimatePresence>
         {reviewItem && (
-          <ReviewModal
-            request={reviewItem}
-            onClose={() => setReviewItem(null)}
-            onDone={fetchRequests}
-          />
+          <ReviewModal request={reviewItem} onClose={() => setReviewItem(null)} onDone={fetchRequests} />
         )}
       </AnimatePresence>
     </div>
