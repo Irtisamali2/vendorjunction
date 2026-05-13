@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { Eye, EyeOff, Lock, Mail, Briefcase } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import toast from 'react-hot-toast'
 import api from '../utils/api'
 import { useAuth } from '../contexts/AuthContext'
@@ -61,16 +61,13 @@ export default function PartnerLogin() {
       >
         {/* Brand */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <div style={{
-            width: '64px', height: '64px', borderRadius: '16px',
-            background: 'linear-gradient(135deg, #F59E0B, #EF4444)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 16px',
-            boxShadow: '0 0 32px rgba(245,158,11,0.3)',
-          }}>
-            <Briefcase size={28} color="white" />
-          </div>
-          <h1 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '6px' }}>
+          <img
+            src="/logos/vendorjunction.png"
+            alt="VendorJunction"
+            style={{ height: '56px', width: 'auto', filter: 'brightness(0) invert(1)', marginBottom: '20px' }}
+          />
+          <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '20px' }} />
+          <h1 style={{ fontSize: '24px', fontWeight: '800', color: 'white', marginBottom: '6px' }}>
             VendorJunction
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '13px', fontWeight: '500', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
