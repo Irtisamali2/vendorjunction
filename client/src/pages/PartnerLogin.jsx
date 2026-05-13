@@ -64,7 +64,7 @@ export default function PartnerLogin() {
           <img
             src="/logos/vendorjunction.png"
             alt="VendorJunction"
-            style={{ height: '56px', width: 'auto', filter: 'brightness(0) invert(1)', marginBottom: '20px' }}
+            style={{ height: '56px', width: 'auto', filter: 'brightness(0) invert(1)', marginBottom: '20px', display: 'block', margin: '0 auto 20px' }}
           />
           <div style={{ width: '100%', height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '20px' }} />
           <h1 style={{ fontSize: '24px', fontWeight: '800', color: 'white', marginBottom: '6px' }}>
