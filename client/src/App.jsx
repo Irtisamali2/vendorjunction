@@ -20,6 +20,8 @@ import PartnerDetail from './pages/admin/PartnerDetail'
 import EmailConfig from './pages/admin/EmailConfig'
 import EmailTemplates from './pages/admin/EmailTemplates'
 import EmailLogs from './pages/admin/EmailLogs'
+import ActivityLogs from './pages/admin/ActivityLogs'
+import LicenseRequests from './pages/admin/LicenseRequests'
 
 // Partner pages
 import PartnerDashboard from './pages/partner/PartnerDashboard'
@@ -69,6 +71,8 @@ export default function App() {
           <Route path="email/config" element={<EmailConfig />} />
           <Route path="email/templates" element={<EmailTemplates />} />
           <Route path="email/logs" element={<EmailLogs />} />
+          <Route path="license-requests" element={<LicenseRequests />} />
+          <Route path="activity-logs" element={<ActivityLogs />} />
         </Route>
 
         {/* Partner routes */}

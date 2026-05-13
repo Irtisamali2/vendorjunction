@@ -33,6 +33,8 @@ app.use('/api/partners', require('./routes/partners'));
 app.use('/api/programs', require('./routes/programs'));
 app.use('/api/attachments', require('./routes/attachments'));
 app.use('/api/email', require('./routes/email'));
+app.use('/api/license-requests', require('./routes/licenseRequests'));
+app.use('/api/activity-logs', require('./routes/activityLogs'));
 
 // Health check
 app.get('/api/health', (req, res) => {

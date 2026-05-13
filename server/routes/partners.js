@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../config/db');
 const { authenticate, requireAdmin } = require('../middleware/auth');
 const { sendEmail } = require('../services/emailService');
+const { logActivity, getClientIp } = require('../middleware/activityLogger');
 
 // ── Public: Submit Registration ─────────────────────────────
 router.post('/register', [
@@ -43,6 +44,13 @@ router.post('/register', [
        data.landline || null, data.website || null, data.business_sector,
        data.business_activities || null, data.company_reg_no || null, data.annual_turnover || null]
     );
+
+    logActivity({
+      actorType: 'system', actorIp: getClientIp(req), category: 'partner', action: 'registered',
+      description: `New partner registration: ${data.company_name} (${data.email})`,
+      entityType: 'partner', entityName: data.company_name,
+      metadata: { email: data.email, country: data.country },
+    }).catch(() => {});
 
     // Send welcome email (non-blocking)
     sendEmail({
@@ -208,6 +216,14 @@ router.patch('/:id/status', authenticate, requireAdmin, [
         partnerId: parseInt(partId)
       }).catch(console.error);
     }
+
+    await logActivity({
+      actorType: 'admin', actorId: req.user.id, actorName: req.user.name, actorEmail: req.user.email,
+      actorIp: getClientIp(req), category: 'partner', action: `status_${status}`,
+      description: `Partner status changed to ${status.toUpperCase()} for ${partner.company_name}`,
+      entityType: 'partner', entityId: parseInt(partId), entityName: partner.company_name,
+      metadata: { previousStatus: partner.status, newStatus: status, reason: rejection_reason || null },
+    });
 
     res.json({ success: true, message: `Partner status updated to ${status}` });
   } catch (err) { next(err); }

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useForm } from 'react-hook-form'
 import {
-  ArrowLeft, CheckCircle, XCircle, PauseCircle,
+  ArrowLeft, CheckCircle, XCircle, PauseCircle, PlayCircle,
   Plus, Pencil, Trash2, Upload, Download,
   FileText, X, Save, AlertCircle
 } from 'lucide-react'
@@ -234,7 +234,7 @@ export default function PartnerDetail() {
   const [attachments, setAttachments] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const [modal, setModal] = useState(null) // 'approve' | 'reject' | 'suspend' | 'add-program' | 'edit-program'
+  const [modal, setModal] = useState(null) // 'approve' | 'reject' | 'suspend' | 'unsuspend' | 'add-program' | 'edit-program'
   const [editingProgram, setEditingProgram] = useState(null)
   const [uploadingFile, setUploadingFile] = useState(false)
 
@@ -358,21 +358,31 @@ export default function PartnerDetail() {
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons — logic:
+              pending  → [Approve] [Reject]
+              approved → [Reject] [Suspend]
+              suspended→ [Reject] [Unsuspend]
+              rejected → [Approve]
+        */}
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-          {status !== 'approved' && (
+          {(status === 'pending' || status === 'rejected') && (
             <button className="btn btn-success btn-sm" onClick={() => setModal('approve')}>
               <CheckCircle size={15} /> Approve
             </button>
           )}
-          {status !== 'rejected' && (
+          {(status === 'pending' || status === 'approved' || status === 'suspended') && (
             <button className="btn btn-danger btn-sm" onClick={() => setModal('reject')}>
               <XCircle size={15} /> Reject
             </button>
           )}
-          {status !== 'suspended' && status !== 'rejected' && (
+          {status === 'approved' && (
             <button className="btn btn-warning btn-sm" onClick={() => setModal('suspend')}>
               <PauseCircle size={15} /> Suspend
+            </button>
+          )}
+          {status === 'suspended' && (
+            <button className="btn btn-success btn-sm" onClick={() => setModal('unsuspend')}>
+              <PlayCircle size={15} /> Unsuspend
             </button>
           )}
         </div>
@@ -595,10 +605,19 @@ export default function PartnerDetail() {
         {modal === 'suspend' && (
           <ConfirmModal
             title="Suspend Partner"
-            message={`Are you sure you want to suspend ${partner.company_name}?`}
+            message={`Are you sure you want to suspend ${partner.company_name}? All portal access will be revoked.`}
             variant="warning"
             onClose={() => setModal(null)}
             onConfirm={() => handleStatusChange('suspended')}
+          />
+        )}
+        {modal === 'unsuspend' && (
+          <ConfirmModal
+            title="Unsuspend Partner"
+            message={`Unsuspend ${partner.company_name}? Their account will be restored to Approved status and portal access re-enabled.`}
+            variant="success"
+            onClose={() => setModal(null)}
+            onConfirm={() => handleStatusChange('approved')}
           />
         )}
         {(modal === 'add-program' || modal === 'edit-program') && (

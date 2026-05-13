@@ -1,17 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, User, LogOut, Menu, X, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, LogOut, Menu, X, ChevronRight } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/partner/' },
-  { label: 'My Profile', icon: User, path: '/partner/profile' },
 ]
 
 const PAGE_TITLES = {
   '/partner/': 'Dashboard',
-  '/partner/profile': 'My Profile',
 }
 
 function SidebarContent({ onClose }) {
